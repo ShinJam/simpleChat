@@ -36,6 +36,7 @@ func main() {
 
 	// Routes.
 	routes.SwaggerRoute(app) // Register a route for API Docs (Swagger).
+	routes.PublicRoutes(app) // Register a public routes for app.
 
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Hello, World!")
