@@ -1,10 +1,13 @@
 package main
 
 import (
+	"os"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/shinjam/simpleChat/pkg/configs"
 	"github.com/shinjam/simpleChat/pkg/middleware"
 	"github.com/shinjam/simpleChat/pkg/routes"
+	"github.com/shinjam/simpleChat/pkg/utils"
 
 	_ "github.com/shinjam/simpleChat/docs"
 )
@@ -38,5 +41,10 @@ func main() {
 		return c.SendString("Hello, World!")
 	})
 
-	app.Listen(":3000")
+	// Start server (with or without graceful shutdown).
+	if os.Getenv("STAGE_STATUS") == "dev" {
+		utils.StartServer(app)
+	} else {
+		utils.StartServerWithGracefulShutdown(app)
+	}
 }
