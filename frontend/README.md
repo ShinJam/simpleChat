@@ -25,6 +25,19 @@ export default defineConfig({
     },
   }
 })
+```
 
+### bootstrap
+reference by: [BootstrapVue 3](https://cdmoro.github.io/bootstrap-vue-3/getting-started/#bundlers)
+```
+$ npm i bootstrap bootstrap-vue-3 --save
+```
 
+### Auth
+reference by: [github.com/SinghDigamber/vue-login-signup-ui](https://github.com/SinghDigamber/vue-login-signup-ui)
+
+### request with axios
+```
+// https://www.npmjs.com/package/vue-axios
+$ npm install --save axios vue-axios
 ```
