@@ -41,3 +41,8 @@ reference by: [github.com/SinghDigamber/vue-login-signup-ui](https://github.com/
 // https://www.npmjs.com/package/vue-axios
 $ npm install --save axios vue-axios
 ```
+
+### vuex
+```
+$ npm install --save vuex@4.0.1
+```
