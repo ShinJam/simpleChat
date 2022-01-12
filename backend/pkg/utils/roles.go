@@ -1,8 +1,7 @@
 package utils
 
 import (
-	"fmt"
-
+	"github.com/labstack/gommon/log"
 	"github.com/shinjam/simpleChat/pkg/repository"
 )
 
@@ -15,8 +14,9 @@ func VerifyRole(role string) (string, error) {
 	case repository.UserRoleName:
 		// Nothing to do, verified successfully.
 	default:
-		// Return error message.
-		return "", fmt.Errorf("role '%v' does not exist", role)
+		// Set default role
+		role = repository.UserRoleName
+		log.Debugf("set default role as user")
 	}
 
 	return role, nil

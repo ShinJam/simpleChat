@@ -57,7 +57,6 @@ func UserSignUp(c *fiber.Ctx) error {
 			"msg":   err.Error(),
 		})
 	}
-
 	// Checking role from sign up data.
 	role, err := utils.VerifyRole(signUp.UserRole)
 	if err != nil {

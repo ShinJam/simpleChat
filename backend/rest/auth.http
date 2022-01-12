@@ -6,7 +6,7 @@ Content-Type: application/json
     "email": "guest2@test.com",
     "password": "1234",
     "user_role": "user"
-} 
+}
 
 ###
 POST http://{{host}}/api/v1/user/sign/in HTTP/1.1
