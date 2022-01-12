@@ -67,7 +67,7 @@ export default {
       this.axios
         .post("http://localhost/api/v1/user/sign/up", this.form)
         .then((response) => {
-          console.log(response.data);
+          this.$router.push("/");
         })
         .catch((err) => {
           console.log(err)

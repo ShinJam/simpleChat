@@ -80,7 +80,8 @@ export default {
       if (this.user.email && this.user.password) {
         this.$store.dispatch("auth/login", this.user).then(
           () => {
-            this.$router.push("/");
+            //https://stackoverflow.com/questions/50629549/vue-router-this-router-push-not-working-on-methods
+            this.$router.go("/");
           },
           (error) => {
             this.loading = false;
