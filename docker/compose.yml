@@ -1,0 +1,44 @@
+version: '3'
+
+volumes:
+  local_postgres_data: {}
+  local_postgres_data_backups: {}
+
+services:
+  fiber: &fiber
+    build:
+      context: ../.
+      dockerfile: docker/Dockerfile.fiber
+    container_name: fibler
+    env_file:
+      - ../.env.${STAGE_STATUS}
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - 5000:5000
+    
+  nginx:
+    restart: always
+    build:
+      context: ../.
+      dockerfile: docker/Dockerfile.nginx
+    ports:
+      - "80:80"
+  
+  redis:
+    image: redis:6.2
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+  postgres:
+    image: postgres:14.1
+    container_name: postgres
+    volumes:
+      - local_postgres_data:/var/lib/postgresql/data:Z
+      - local_postgres_data_backups:/backups:z
+    env_file:
+      - ../.env.${STAGE_STATUS}
+    ports:
+      - 5432:5432

@@ -6,8 +6,8 @@
             "nonProdToken": "bar"
         },
         "local": {
-            "version": "v2",
-            "host": "localhost:3000",
+            "version": "v1",
+            "host": "localhost",
             "token": "{{$shared nonProdToken}}",
             "secretKey": "devSecret"
         },
