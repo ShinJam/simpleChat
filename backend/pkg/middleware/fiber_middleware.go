@@ -2,6 +2,9 @@ package middleware
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/websocket/v2"
+	"github.com/shinjam/simpleChat/app/ws"
+
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 )
@@ -15,4 +18,18 @@ func FiberMiddleware(a *fiber.App) {
 		// Add simple logger.
 		logger.New(),
 	)
+}
+
+func FiberWebsocketMiddleware(a *fiber.App, wsServer *ws.WsServer) {
+	a.Use("/ws", func(c *fiber.Ctx) error {
+		// IsWebSocketUpgrade returns true if the client
+		// requested upgrade to the WebSocket protocol.
+		if websocket.IsWebSocketUpgrade(c) {
+			c.Locals("allowed", true)
+			c.Locals("wsServer", wsServer)
+			return c.Next()
+		}
+
+		return fiber.ErrUpgradeRequired
+	})
 }
