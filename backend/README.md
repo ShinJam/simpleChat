@@ -53,6 +53,22 @@ platform level의 로직을 포함합니다. 실제로 프로젝트를 서비스
 - `./platform/migrations` migrations 파일을 관리합니다.
 - `./platform/cache` cache connection을 관리합니다.
 
+
+## Notes
+### WebSocket Proxy
+reverse proxy를 사용한다면 socket 통신을 위해 설정을 해줘야 한다.
+```
+  proxy_http_version 1.1;
+  proxy_set_header Upgrade $http_upgrade;
+  proxy_set_header Connection "Upgrade";
+```
+- http1.1 명시
+  - websocket으로 upgrade는 http1.1에서만 된다. 관련 이슈: [WebSocket over HTTP2](https://github.com/websockets/ws/issues/1458)
+- upgrade 헤더를 명시해줘야 한다.
+  - ws 요청은 Upgrade 헤더를 사용한다. Upgrade hop-by-hop 헤더로 end-to-end 헤더가 아니기때문에 중간에 케시나 프록시에의해 전달이 안되기도 한다.
+- 연결을 닫지않고 연결 상태로 유지하도록 해야한다.
+![websocket request](https://user-images.githubusercontent.com/38058085/149462229-eb6c95cf-8f10-41aa-87fd-9ad53aeea0e3.png)
+
 # Reference
 <details>
     <summary>내용 보기</summary>
