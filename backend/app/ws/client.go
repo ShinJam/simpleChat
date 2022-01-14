@@ -1,11 +1,13 @@
 package ws
 
 import (
+	"encoding/json"
 	"log"
 	"sync"
 	"time"
 
 	"github.com/gofiber/websocket/v2"
+	"github.com/google/uuid"
 )
 
 const (
@@ -33,13 +35,19 @@ type Client struct {
 	conn     *websocket.Conn
 	wsServer *WsServer
 	send     chan []byte
+	ID       uuid.UUID `json:"id"`
+	Email    string    `json:"email"`
+	rooms    map[*Room]bool
 }
 
-func newClient(conn *websocket.Conn, wsServer *WsServer) *Client {
+func newClient(conn *websocket.Conn, wsServer *WsServer, email string) *Client {
 	return &Client{
+		ID:       uuid.New(),
+		Email:    email,
 		conn:     conn,
 		wsServer: wsServer,
 		send:     make(chan []byte, 256),
+		rooms:    make(map[*Room]bool),
 	}
 
 }
@@ -64,7 +72,7 @@ func (client *Client) readPump(wg *sync.WaitGroup) {
 			break
 		}
 
-		client.wsServer.broadcast <- jsonMessage
+		client.handleNewMessage(jsonMessage)
 	}
 
 }
@@ -79,7 +87,6 @@ func (client *Client) writePump(wg *sync.WaitGroup) {
 	for {
 		select {
 		case message, ok := <-client.send:
-			log.Println(message)
 			client.conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if !ok {
 				// The WsServer closed the channel.
@@ -118,10 +125,122 @@ func (client *Client) disconnect() {
 	client.conn.Close()
 }
 
+func (client *Client) handleNewMessage(jsonMessage []byte) {
+
+	var message Message
+	if err := json.Unmarshal(jsonMessage, &message); err != nil {
+		log.Printf("Error on unmarshal JSON message %s", err)
+		return
+	}
+
+	message.Sender = client
+
+	switch message.Action {
+	case SendMessageAction:
+		roomID := message.Target.GetId()
+		if room := client.wsServer.findRoomByID(roomID); room != nil {
+			room.broadcast <- &message
+		}
+
+	case JoinRoomAction:
+		client.handleJoinRoomMessage(message)
+
+	case LeaveRoomAction:
+		client.handleLeaveRoomMessage(message)
+
+	case JoinRoomPrivateAction:
+		client.handleJoinRoomPrivateMessage(message)
+	}
+
+}
+func (client *Client) handleJoinRoomMessage(message Message) {
+	roomName := message.Message
+
+	client.joinRoom(roomName, nil)
+}
+
+func (client *Client) handleLeaveRoomMessage(message Message) {
+	room := client.wsServer.findRoomByID(message.Message)
+	if room == nil {
+		return
+	}
+
+	if _, ok := client.rooms[room]; ok {
+		delete(client.rooms, room)
+	}
+
+	room.unregister <- client
+}
+
+func (client *Client) handleJoinRoomPrivateMessage(message Message) {
+
+	target := client.wsServer.findClientByID(message.Message)
+
+	if target == nil {
+		return
+	}
+
+	// create unique room name combined to the two IDs
+	roomName := message.Message + client.ID.String()
+
+	client.joinRoom(roomName, target)
+	target.joinRoom(roomName, client)
+
+}
+
+func (client *Client) joinRoom(roomName string, sender *Client) {
+
+	room := client.wsServer.findRoomByName(roomName)
+	if room == nil {
+		room = client.wsServer.createRoom(roomName, sender != nil)
+	}
+
+	// Don't allow to join private rooms through public room message
+	if sender == nil && room.Private {
+		return
+	}
+
+	if !client.isInRoom(room) {
+
+		client.rooms[room] = true
+		room.register <- client
+
+		client.notifyRoomJoined(room, sender)
+	}
+
+}
+
+func (client *Client) isInRoom(room *Room) bool {
+	if _, ok := client.rooms[room]; ok {
+		return true
+	}
+
+	return false
+}
+
+func (client *Client) notifyRoomJoined(room *Room, sender *Client) {
+	message := Message{
+		Action: RoomJoinedAction,
+		Target: room,
+		Sender: sender,
+	}
+
+	client.send <- message.encode()
+}
+
+func (client *Client) GetEmail() string {
+	return client.Email
+}
+
 // ServeWs handles websocket requests from clients requests.
 func ServeWs(conn *websocket.Conn) {
 	wsServer := conn.Locals("wsServer").(*WsServer)
-	client := newClient(conn, wsServer)
+	email := conn.Query("email")
+	if email == "" {
+		log.Println("Url Param 'email' is missing")
+		return
+	}
+	client := newClient(conn, wsServer, email)
 	wsServer.register <- client
 
 	var wg sync.WaitGroup
