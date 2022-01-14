@@ -1,10 +1,15 @@
 package ws
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/google/uuid"
+	"github.com/labstack/gommon/log"
+	"github.com/shinjam/simpleChat/platform/cache"
 )
+
+var ctx = context.Background()
 
 const welcomeMessage = "%s joined the room"
 
@@ -33,6 +38,8 @@ func NewRoom(name string, private bool) *Room {
 
 // RunRoom runs our room, accepting various requests
 func (room *Room) RunRoom() {
+	go room.subscribeToRoomMessages()
+
 	for {
 		select {
 
@@ -43,7 +50,7 @@ func (room *Room) RunRoom() {
 			room.unregisterClientInRoom(client)
 
 		case message := <-room.broadcast:
-			room.broadcastToClientsInRoom(message.encode())
+			room.publishRoomMessage(message.encode())
 		}
 
 	}
@@ -73,7 +80,7 @@ func (room *Room) notifyClientJoined(client *Client) {
 		Message: fmt.Sprintf(welcomeMessage, client.GetEmail()),
 	}
 
-	room.broadcastToClientsInRoom(message.encode())
+	room.publishRoomMessage(message.encode())
 }
 
 func (room *Room) GetId() string {
@@ -82,4 +89,41 @@ func (room *Room) GetId() string {
 
 func (room *Room) GetName() string {
 	return room.Name
+}
+
+// GetPrivate method to make Room compatible with model.Room interface
+func (room *Room) GetPrivate() bool {
+	return room.Private
+}
+
+func (room *Room) publishRoomMessage(message []byte) {
+	connRedis, err := cache.RedisConnection()
+	if err != nil {
+		log.Error(err)
+		return
+	}
+
+	err = connRedis.Publish(ctx, room.GetName(), message).Err()
+	if err != nil {
+		log.Error(err)
+	}
+}
+
+func (room *Room) subscribeToRoomMessages() {
+	connRedis, err := cache.RedisConnection()
+	if err != nil {
+		log.Error(err)
+		return
+	}
+
+	pubsub := connRedis.Subscribe(ctx, room.GetName())
+	if err != nil {
+		log.Error(err)
+	}
+
+	ch := pubsub.Channel()
+
+	for msg := range ch {
+		room.broadcastToClientsInRoom([]byte(msg.Payload))
+	}
 }

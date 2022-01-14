@@ -8,6 +8,7 @@ import (
 
 	"github.com/gofiber/websocket/v2"
 	"github.com/google/uuid"
+	"github.com/shinjam/simpleChat/pkg/repository"
 )
 
 const (
@@ -49,7 +50,15 @@ func newClient(conn *websocket.Conn, wsServer *WsServer, email string) *Client {
 		send:     make(chan []byte, 256),
 		rooms:    make(map[*Room]bool),
 	}
+}
 
+// Add the GetId method to make Client compatible with repository.UserType interface
+func (client *Client) GetId() string {
+	return client.ID.String()
+}
+
+func (client *Client) GetEmail() string {
+	return client.Email
 }
 
 func (client *Client) readPump(wg *sync.WaitGroup) {
@@ -186,11 +195,11 @@ func (client *Client) handleJoinRoomPrivateMessage(message Message) {
 
 }
 
-func (client *Client) joinRoom(roomName string, sender *Client) {
+func (client *Client) joinRoom(roomName string, sender repository.User) {
 
 	room := client.wsServer.findRoomByName(roomName)
 	if room == nil {
-		room = client.wsServer.createRoom(roomName, sender != nil)
+		room, _ = client.wsServer.createRoom(roomName, sender != nil)
 	}
 
 	// Don't allow to join private rooms through public room message
@@ -216,7 +225,7 @@ func (client *Client) isInRoom(room *Room) bool {
 	return false
 }
 
-func (client *Client) notifyRoomJoined(room *Room, sender *Client) {
+func (client *Client) notifyRoomJoined(room *Room, sender repository.User) {
 	message := Message{
 		Action: RoomJoinedAction,
 		Target: room,
@@ -224,10 +233,6 @@ func (client *Client) notifyRoomJoined(room *Room, sender *Client) {
 	}
 
 	client.send <- message.encode()
-}
-
-func (client *Client) GetEmail() string {
-	return client.Email
 }
 
 // ServeWs handles websocket requests from clients requests.
