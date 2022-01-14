@@ -5,17 +5,20 @@
         <div class="col-12 col-md-8 col-lg-6 col-xl-5">
           <div class="card bg-dark text-white" style="border-radius: 1rem">
             <div class="card-body p-5 text-center">
-              <form class="mb-md-5 mt-md-4 pb-5" name="form" @submit.prevent="handleLogin">
+              <form
+                class="mb-md-5 mt-md-4 pb-5"
+                name="form"
+                @submit.prevent="handleLogin"
+              >
                 <h2 class="fw-bold mb-2 text-uppercase">Login</h2>
                 <p class="text-white-50 mb-5">
                   Please enter your login and password!
                 </p>
 
-
                 <div class="form-group form-outline form-white mb-4">
                   <label class="form-label" for="email">Email</label>
                   <input
-                    v-model="user.email"
+                    v-model="state.user.email"
                     type="text"
                     class="form-control form-control-lg"
                     name="email"
@@ -25,7 +28,7 @@
                 <div class="form-group form-outline form-white mb-4">
                   <label class="form-label" for="password">Password</label>
                   <input
-                    v-model="user.password"
+                    v-model="state.user.password"
                     type="password"
                     class="form-control form-control-lg"
                     name="password"
@@ -40,7 +43,9 @@
               <div>
                 <p class="mb-0">
                   Don't have an account?
-                  <router-link class="text-white-50 fw-bold" to="/signup">Sign Up</router-link >
+                  <router-link class="text-white-50 fw-bold" to="/signup"
+                    >Sign Up</router-link
+                  >
                 </p>
               </div>
             </div>
@@ -49,51 +54,58 @@
       </div>
     </div>
   </section>
-
 </template>
 
 <script>
 import User from "@/models/user";
+import { onBeforeMount, reactive, computed } from "vue";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 
 export default {
   name: "Login",
-  data() {
-    return {
+  setup() {
+    const router = useRouter();
+    const store = useStore();
+    const state = reactive({
       user: new User("", ""),
       loading: false,
       message: "",
-    };
-  },
-  computed: {
-    loggedIn() {
-      return this.$store.state.auth.status.loggedIn;
-    },
-  },
-  created() {
-    if (this.loggedIn) {
-      this.$router.push("/");
-    }
-  },
-  methods: {
-    handleLogin() {
-      this.loading = true;
-      if (this.user.email && this.user.password) {
-        this.$store.dispatch("auth/login", this.user).then(
+      loggedIn: computed(() => store.state.auth.status.loggedIn),
+    });
+
+    onBeforeMount(() => {
+      if (state.loggedIn) {
+        router.push("/");
+      }
+    });
+
+    const handleLogin = () =>{
+      console.log(state.user.email, state.user.password)
+      state.loading = true;
+      if (state.user.email && state.user.password) {
+        store.dispatch("auth/login", state.user).then(
           () => {
             //https://stackoverflow.com/questions/50629549/vue-router-this-router-push-not-working-on-methods
-            this.$router.go("/");
+            router.go("/");
           },
           (error) => {
-            this.loading = false;
-            this.message =
+            console.log(error)
+            state.loading = false;
+            state.message =
               (error.response && error.response.data) ||
               error.message ||
               error.toString();
           }
         );
       }
-    },
-  },
+    }
+    return {
+      state,
+      handleLogin
+    }
+  }
+
 };
 </script>
 
