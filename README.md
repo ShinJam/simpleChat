@@ -2,6 +2,25 @@
 
 <img src="https://img.shields.io/badge/Go-1.17+-00ADD8?style=for-the-badge&logo=go" alt="go version" />&nbsp;<img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge&logo=none" alt="license" />
 
+# Features
+- Authentication
+  - JWT
+- Chat
+  - 1:1
+  - n:n
+## TL;DR
+### Frontend
+- Vue3를 사용한 UI 구성
+- Vuex를 사용하여 상태관리
+- bootstrap5를 사용한 style
+- Websocket으로 socket 통신
+
+### Backend
+- Go Fiber로 API 구현
+- postgres로 유저, 채팅 정보 저장
+- [golang-migrate/migrate](https://github.com/golang-migrate/migrate)로 migration 관리
+- [sqlx](https://github.com/jmoiron/sqlx)를 사용하여 query 요청
+- redis로 pub/sub 구현
 # ⚡️ Goal of project
 
 - 고가용성 인프라 구축을 위한 간단한 Application 개발
