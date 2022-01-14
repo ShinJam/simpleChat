@@ -16,3 +16,11 @@ type User struct {
 	UserStatus   int       `db:"user_status" json:"user_status" validate:"required,len=1"`
 	UserRole     string    `db:"user_role" json:"user_role" validate:"required,lte=25"`
 }
+
+func (user *User) GetId() string {
+	return user.ID.String()
+}
+
+func (user *User) GetEmail() string {
+	return user.Email
+}
