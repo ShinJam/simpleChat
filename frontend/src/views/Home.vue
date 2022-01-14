@@ -130,7 +130,7 @@ export default {
     const store = useStore();
     const state = reactive({
       ws: null,
-      serverUrl: "ws://localhost:5000/ws/v1",
+      serverUrl: "ws://" + location.host + "/ws/v1",
       roomInput: null,
       rooms: [],
       user: {
