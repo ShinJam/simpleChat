@@ -1,20 +1,48 @@
 <template>
   <div class="container">
     <header class="jumbotron">
-      <h3 v-if="currentUser">
-        Hello <strong>{{ currentUser.email }}</strong>
+      <h3>
+        Hello <strong>{{ state.currentUser.email }}</strong>
       </h3>
     </header>
     <div class="container h-100">
       <div class="row justify-content-center h-100">
-        <div class="col-12 form" v-if="!ws">
-          <h1>Something wrong with web socket</h1>
-        </div>
+        <!-- <div class="col-12 form" v-if="!ws">
+              <div class="input-group">
+                <input
+                  v-model="user.name"
+                  class="form-control name"
+                  placeholder="Please fill in your (nick)name"
+                  @keyup.enter.exact="connect"
+                ></input>
+                <div class="input-group-append">
+                  <span class="input-group-text send_btn" @click="connect">
+                  >
+                  </span>
+                </div>
+            </div>
+          </div> -->
+        <div class="col-12">
+          <div class="row">
+            <div
+              class="col-2 card profile"
+              v-for="user in state.usersList"
+              :key="user.id"
+            >
+              <div class="card-header">{{ user.email }}</div>
+              <div class="card-body">
+                <button class="btn btn-primary" @click="joinPrivateRoom(user)">
+                  Send Message
+                </button>
+              </div>
 
-        <div class="col-12 room" v-if="ws != null">
+            </div>
+          </div>
+        </div>
+        <div class="col-12 room" v-if="state.ws != null">
           <div class="input-group">
             <input
-              v-model="roomInput"
+              v-model="state.roomInput"
               class="form-control name"
               placeholder="Type the room you want to join"
               @keyup.enter.exact="joinRoom"
@@ -27,7 +55,7 @@
           </div>
         </div>
 
-        <div class="chat" v-for="(room, key) in rooms" :key="key">
+        <div class="chat" v-for="(room, key) in state.rooms" :key="key">
           <div class="card">
             <div class="card-header msg_head">
               <div class="d-flex bd-highlight justify-content-center">
@@ -91,10 +119,16 @@
 </template>
 
 <script>
+import { onBeforeMount, reactive, computed } from "vue";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
+
 export default {
   name: "Home",
-  data() {
-    return {
+  setup() {
+    const router = useRouter();
+    const store = useStore();
+    const state = reactive({
       ws: null,
       serverUrl: "ws://localhost:5000/ws/v1",
       roomInput: null,
@@ -102,38 +136,36 @@ export default {
       user: {
         email: "",
       },
-      users: []
+      users: [],
+      currentUser: computed(() => store.state.auth.user),
+      usersList: computed(() => state.users.filter(user => user.email != state.currentUser.email))
+    });
+
+    onBeforeMount(() => {
+      if (!state.currentUser) {
+        router.push("/login");
+      } else {
+        state.user.email = state.currentUser.email;
+      }
+
+      connectToWebsocket();
+    });
+
+    const connectToWebsocket = () => {
+      state.ws = new WebSocket(state.serverUrl + "?email=" + state.user.email);
+      state.ws.addEventListener("open", (event) => {
+        onWebsocketOpen(event);
+      });
+      state.ws.addEventListener("message", (event) => {
+        handleNewMessage(event);
+      });
     };
-  },
-  computed: {
-    currentUser() {
-      return this.$store.state.auth.user;
-    },
-  },
-  mounted() {
-    if (!this.currentUser) {
-      this.$router.push("/login");
-    } else {
-      this.user.email = this.currentUser.email
-    }
 
-    this.connectToWebsocket();
-  },
-  methods: {
-    connectToWebsocket() {
-      this.ws = new WebSocket(this.serverUrl + "?email=" + this.user.email);
-      this.ws.addEventListener("open", (event) => {
-        this.onWebsocketOpen(event);
-      });
-      this.ws.addEventListener("message", (event) => {
-        this.handleNewMessage(event);
-      });
-    },
-    onWebsocketOpen() {
+    const onWebsocketOpen = (event) => {
       console.log("connected to WS!");
-    },
+    };
 
-    handleNewMessage(event) {
+    const handleNewMessage = (event) => {
       let data = event.data;
       data = data.split(/\r?\n/);
 
@@ -141,47 +173,52 @@ export default {
         let msg = JSON.parse(data[i]);
         switch (msg.action) {
           case "send-message":
-            this.handleChatMessage(msg);
+            handleChatMessage(msg);
             break;
           case "user-join":
-            this.handleUserJoined(msg);
+            handleUserJoined(msg);
             break;
           case "user-left":
-            this.handleUserLeft(msg);
+            handleUserLeft(msg);
             break;
           case "room-joined":
-            this.handleRoomJoined(msg);
+            handleRoomJoined(msg);
             break;
           default:
             break;
         }
       }
-    },
-    handleChatMessage(msg) {
-      const room = this.findRoom(msg.target.id);
+    }
+
+    const handleChatMessage = (msg) => {
+      const room = findRoom(msg.target.id);
       if (typeof room !== "undefined") {
         room.messages.push(msg);
       }
-    },
-    handleUserJoined(msg) {
-      this.users.push(msg.sender);
-    },
-    handleUserLeft(msg) {
-      for (let i = 0; i < this.users.length; i++) {
-        if (this.users[i].id == msg.sender.id) {
-          this.users.splice(i, 1);
+    }
+
+    const handleUserJoined =(msg) => {
+      state.users.push(msg.sender);
+    }
+
+    const handleUserLeft = (msg) => {
+      for (let i = 0; i < state.users.length; i++) {
+        if (state.users[i].id == msg.sender.id) {
+          state.users.splice(i, 1);
         }
       }
-    },
-    handleRoomJoined(msg) {
+    }
+
+    const handleRoomJoined = (msg) => {
       const room = msg.target;
       room.name = room.private ? msg.sender.name : room.name;
       room["messages"] = [];
-      this.rooms.push(room);
-    },
-    sendMessage(room) {
+      state.rooms.push(room);
+    }
+
+    const sendMessage = (room) =>{
       if (room.newMessage !== "") {
-        this.ws.send(
+        state.ws.send(
           JSON.stringify({
             action: "send-message",
             message: room.newMessage,
@@ -193,35 +230,48 @@ export default {
         );
         room.newMessage = "";
       }
-    },
-    findRoom(roomId) {
-      for (let i = 0; i < this.rooms.length; i++) {
-        if (this.rooms[i].id === roomId) {
-          return this.rooms[i];
+    }
+
+    const findRoom = (roomId) => {
+      for (let i = 0; i < state.rooms.length; i++) {
+        if (state.rooms[i].id === roomId) {
+          return state.rooms[i];
         }
       }
-    },
-    joinRoom() {
-      this.ws.send(
-        JSON.stringify({ action: "join-room", message: this.roomInput })
-      );
-      this.roomInput = "";
-    },
-    leaveRoom(room) {
-      this.ws.send(JSON.stringify({ action: "leave-room", message: room.id }));
+    }
 
-      for (let i = 0; i < this.rooms.length; i++) {
-        if (this.rooms[i].id === room.id) {
-          this.rooms.splice(i, 1);
+    const joinRoom = () =>{
+      state.ws.send(
+        JSON.stringify({ action: "join-room", message: state.roomInput })
+      );
+      state.roomInput = "";
+    }
+
+    const leaveRoom = (room) => {
+      state.ws.send(JSON.stringify({ action: "leave-room", message: room.id }));
+
+      for (let i = 0; i < state.rooms.length; i++) {
+        if (state.rooms[i].id === room.id) {
+          state.rooms.splice(i, 1);
           break;
         }
       }
-    },
-    joinPrivateRoom(room) {
-      this.ws.send(
+    }
+
+    const joinPrivateRoom = (room) => {
+      state.ws.send(
         JSON.stringify({ action: "join-room-private", message: room.id })
       );
-    },
-  },
+    }
+
+
+    return {
+      state,
+      joinRoom,
+      joinPrivateRoom,
+      leaveRoom,
+      sendMessage
+    };
+  }
 };
 </script>
