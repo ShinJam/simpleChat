@@ -53,9 +53,18 @@ platform level의 로직을 포함합니다. 실제로 프로젝트를 서비스
 - `./platform/migrations` migrations 파일을 관리합니다.
 - `./platform/cache` cache connection을 관리합니다.
 
+# Commands
+## Run Project
+```
+$ make compose.up
+```
+## Make migrations
+```
+$ migrate create -ext sql -dir platform/migrations create_users_table
+```
 
-## Notes
-### WebSocket Proxy
+# Notes
+## WebSocket Proxy
 reverse proxy를 사용한다면 socket 통신을 위해 설정을 해줘야 한다.
 ```
   proxy_http_version 1.1;
