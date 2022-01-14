@@ -155,16 +155,16 @@ func (server *WsServer) createRoom(name string, private bool) (*Room, error) {
 	return room, nil
 }
 
-func (server *WsServer) findClientByID(ID string) *Client {
-	var foundClient *Client
-	for client := range server.clients {
-		if client.ID.String() == ID {
-			foundClient = client
+func (server *WsServer) findUserByID(ID string) repository.User {
+	var foundUser repository.User
+	for _, client := range server.Users {
+		if client.GetId() == ID {
+			foundUser = client
 			break
 		}
 	}
 
-	return foundClient
+	return foundUser
 }
 
 // Publish userJoined message in pub/sub
@@ -225,7 +225,16 @@ func (server *WsServer) listenPubSubChannel() {
 			server.handleUserJoined(message)
 		case UserLeftAction:
 			server.handleUserLeft(message)
+		case JoinRoomPrivateAction:
+			server.handleUserJoinPrivate(message)
 		}
+	}
+}
+func (server *WsServer) handleUserJoinPrivate(message Message) {
+	// Find client for given user, if found add the user to the room.
+	targetClient := server.findClientByID(message.Message)
+	if targetClient != nil {
+		targetClient.joinRoom(message.Target.GetName(), message.Sender)
 	}
 }
 
@@ -244,4 +253,16 @@ func (server *WsServer) handleUserLeft(message Message) {
 		}
 	}
 	server.broadcastToClients(message.encode())
+}
+
+func (server *WsServer) findClientByID(ID string) *Client {
+	var foundClient *Client
+	for client := range server.clients {
+		if client.GetId() == ID {
+			foundClient = client
+			break
+		}
+	}
+
+	return foundClient
 }

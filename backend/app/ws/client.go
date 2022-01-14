@@ -2,13 +2,15 @@ package ws
 
 import (
 	"encoding/json"
-	"log"
+
 	"sync"
 	"time"
 
 	"github.com/gofiber/websocket/v2"
 	"github.com/google/uuid"
+	"github.com/labstack/gommon/log"
 	"github.com/shinjam/simpleChat/pkg/repository"
+	"github.com/shinjam/simpleChat/platform/cache"
 )
 
 const (
@@ -180,9 +182,7 @@ func (client *Client) handleLeaveRoomMessage(message Message) {
 }
 
 func (client *Client) handleJoinRoomPrivateMessage(message Message) {
-
-	target := client.wsServer.findClientByID(message.Message)
-
+	target := client.wsServer.findUserByID(message.Message)
 	if target == nil {
 		return
 	}
@@ -190,12 +190,17 @@ func (client *Client) handleJoinRoomPrivateMessage(message Message) {
 	// create unique room name combined to the two IDs
 	roomName := message.Message + client.ID.String()
 
-	client.joinRoom(roomName, target)
-	target.joinRoom(roomName, client)
+	// Join room
+	joinedRoom := client.joinRoom(roomName, target)
 
+	// Instead of instantaneously joining the target client.
+	// Let the target client join with a invite request over pub/sub
+	if joinedRoom != nil {
+		client.inviteTargetUser(target, joinedRoom)
+	}
 }
 
-func (client *Client) joinRoom(roomName string, sender repository.User) {
+func (client *Client) joinRoom(roomName string, sender repository.User) *Room {
 
 	room := client.wsServer.findRoomByName(roomName)
 	if room == nil {
@@ -204,17 +209,35 @@ func (client *Client) joinRoom(roomName string, sender repository.User) {
 
 	// Don't allow to join private rooms through public room message
 	if sender == nil && room.Private {
-		return
+		return nil
 	}
 
 	if !client.isInRoom(room) {
-
 		client.rooms[room] = true
 		room.register <- client
-
 		client.notifyRoomJoined(room, sender)
 	}
+	return room
 
+}
+
+// Send out invite message over pub/sub in the general channel.
+func (client *Client) inviteTargetUser(target repository.User, room *Room) {
+	connRedis, err := cache.RedisConnection()
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	inviteMessage := &Message{
+		Action:  JoinRoomPrivateAction,
+		Message: target.GetId(),
+		Target:  room,
+		Sender:  client,
+	}
+
+	if err := connRedis.Publish(ctx, PubSubGeneralChannel, inviteMessage.encode()).Err(); err != nil {
+		log.Error(err)
+	}
 }
 
 func (client *Client) isInRoom(room *Room) bool {
@@ -240,7 +263,7 @@ func ServeWs(conn *websocket.Conn) {
 	wsServer := conn.Locals("wsServer").(*WsServer)
 	email := conn.Query("email")
 	if email == "" {
-		log.Println("Url Param 'email' is missing")
+		log.Error("Url Param 'email' is missing")
 		return
 	}
 	client := newClient(conn, wsServer, email)
