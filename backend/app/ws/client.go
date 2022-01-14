@@ -165,9 +165,7 @@ func (client *Client) handleLeaveRoomMessage(message Message) {
 		return
 	}
 
-	if _, ok := client.rooms[room]; ok {
-		delete(client.rooms, room)
-	}
+	delete(client.rooms, room)
 
 	room.unregister <- client
 }
