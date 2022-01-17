@@ -131,7 +131,7 @@ export default {
     const state = reactive({
       ws: null,
       // serverUrl: "ws://" + location.host + "/ws/v1",
-      serverUrl: "ws://" + "localhost"+ "/ws/v1",
+      serverUrl: "ws://" + import.meta.env.VITE_API_URL+ "/ws/v1",
       roomInput: null,
       rooms: [],
       user: {

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost/api/v1/user/';
+const API_URL = 'http://' + import.meta.env.VITE_API_URL + '/api/v1/user/';
 
 class AuthService {
   login(user) {
