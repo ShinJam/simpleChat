@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
+import store from '@/store/index';
 
 const routes = [
   {
@@ -9,7 +10,15 @@ const routes = [
   {
     path: '/home',
     name: 'Home',
-    component: Home
+    component: Home,
+    beforeEnter: (to, from, next) => {
+      console.log(store.state.auth.user)
+      if (store.state.auth.user) {
+        next()
+      } else {
+        next("login")
+      }
+    },
   },
   {
     path: '/signup',
@@ -29,5 +38,6 @@ const router = createRouter({
   history: createWebHistory("/"),
   routes
 })
+
 
 export default router

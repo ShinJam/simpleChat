@@ -143,12 +143,6 @@ export default {
     });
 
     onBeforeMount(() => {
-      if (!state.currentUser) {
-        router.push("/login");
-      } else {
-        state.user.email = state.currentUser.email;
-      }
-
       connectToWebsocket();
     });
 
