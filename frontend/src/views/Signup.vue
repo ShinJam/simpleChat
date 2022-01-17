@@ -65,7 +65,7 @@ export default {
   methods: {
     submitForm() {
       this.axios
-        .post("http://localhost/api/v1/user/sign/up", this.form)
+        .post("http://" + import.meta.env.VITE_API_URL+ "/api/v1/user/sign/up", this.form)
         .then((response) => {
           this.$router.push("/");
         })
