@@ -134,9 +134,6 @@ export default {
       serverUrl: "ws://" + import.meta.env.VITE_API_URL+ "/ws/v1",
       roomInput: null,
       rooms: [],
-      user: {
-        email: "",
-      },
       users: [],
       currentUser: computed(() => store.state.auth.user),
       usersList: computed(() => state.users.filter(user => user.email != state.currentUser.email))
@@ -147,7 +144,7 @@ export default {
     });
 
     const connectToWebsocket = () => {
-      state.ws = new WebSocket(state.serverUrl + "?email=" + state.user.email);
+      state.ws = new WebSocket(state.serverUrl + "?email=" + state.currentUser.email);
       state.ws.addEventListener("open", (event) => {
         onWebsocketOpen(event);
       });
