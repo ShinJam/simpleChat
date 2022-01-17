@@ -3,6 +3,7 @@ package queries
 import (
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
+	"github.com/labstack/gommon/log"
 	"github.com/shinjam/simpleChat/app/models"
 	"github.com/shinjam/simpleChat/pkg/repository"
 )
@@ -14,13 +15,19 @@ type UserQueries struct {
 
 // GetAllUsers query for getting all users
 func (q *UserQueries) GetAllUsers() ([]repository.User, error) {
-	users := []repository.User{}
+	var users []models.User
 	err := q.Select(&users, `SELECT id, email FROM users WHERE user_status=1`)
 	if err != nil {
 		// Return empty object and error.
+		log.Error(err)
 		return nil, err
 	}
-	return users, nil
+	var repoUsers []repository.User
+	for _, user := range users {
+		repoUsers = append(repoUsers, &user)
+	}
+
+	return repoUsers, nil
 }
 
 // GetUserByID query for getting one User by given ID.

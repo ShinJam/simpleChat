@@ -24,8 +24,11 @@ build:
 run: swag build
 	$(BUILD_DIR)/$(APP_NAME)
 
+docker.redis:
+	docker-compose -f docker/compose.yml --env-file=./.env.$(stage) up -d redis
+
 docker.postgres:
-	docker-compose -f docker/compose.yml --env-file=./.env.$(stage) up -d postgres 
+	docker-compose -f docker/compose.yml --env-file=./.env.$(stage) up -d postgres
 
 compose.build:
 	docker-compose -f docker/compose.yml --env-file=./.env.$(stage) build
