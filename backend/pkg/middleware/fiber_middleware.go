@@ -3,6 +3,7 @@ package middleware
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/websocket/v2"
+	"github.com/labstack/gommon/log"
 	"github.com/shinjam/simpleChat/app/ws"
 	"github.com/shinjam/simpleChat/platform/database"
 
@@ -33,6 +34,10 @@ func FiberWebsocketMiddleware(a *fiber.App, wsServer *ws.WsServer) {
 			})
 		}
 		users, err := db.GetAllUsers()
+		if err != nil {
+			log.Error(err)
+		}
+
 		wsServer.Users = users
 
 		// IsWebSocketUpgrade returns true if the client
