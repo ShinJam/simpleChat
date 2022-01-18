@@ -70,8 +70,17 @@ func (client *Client) readPump(wg *sync.WaitGroup) {
 	}()
 
 	client.conn.SetReadLimit(maxMessageSize)
-	client.conn.SetReadDeadline(time.Now().Add(pongWait))
-	client.conn.SetPongHandler(func(string) error { client.conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
+	err := client.conn.SetReadDeadline(time.Now().Add(pongWait))
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	client.conn.SetPongHandler(func(string) error {
+		if err := client.conn.SetReadDeadline(time.Now().Add(pongWait)); err != nil {
+			log.Error(err)
+		}
+		return nil
+	})
 
 	// Start endless read loop, waiting for messages from client
 	for {
@@ -93,15 +102,25 @@ func (client *Client) writePump(wg *sync.WaitGroup) {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
 		ticker.Stop()
-		client.conn.Close()
+		err := client.conn.Close()
+		if err != nil {
+			log.Error(err)
+		}
 	}()
 	for {
 		select {
 		case message, ok := <-client.send:
-			client.conn.SetWriteDeadline(time.Now().Add(writeWait))
+			err := client.conn.SetWriteDeadline(time.Now().Add(writeWait))
+			if err != nil {
+				log.Error(err)
+				return
+			}
 			if !ok {
 				// The WsServer closed the channel.
-				client.conn.WriteMessage(websocket.CloseMessage, []byte{})
+				err = client.conn.WriteMessage(websocket.CloseMessage, []byte{})
+				if err != nil {
+					log.Error(err)
+				}
 				return
 			}
 
@@ -109,21 +128,36 @@ func (client *Client) writePump(wg *sync.WaitGroup) {
 			if err != nil {
 				return
 			}
-			w.Write(message)
+			_, err = w.Write(message)
+			if err != nil {
+				log.Error(err)
+				return
+			}
 
 			// Attach queued chat messages to the current websocket message.
 			n := len(client.send)
 			for i := 0; i < n; i++ {
-				w.Write(newline)
-				w.Write(<-client.send)
+				_, err = w.Write(newline)
+				if err != nil {
+					log.Error(err)
+				}
+				_, err = w.Write(<-client.send)
+				if err != nil {
+					log.Error(err)
+				}
 			}
 
 			if err := w.Close(); err != nil {
 				return
 			}
 		case <-ticker.C:
-			client.conn.SetWriteDeadline(time.Now().Add(writeWait))
+
+			if err := client.conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
+				log.Error(err)
+				return
+			}
 			if err := client.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
+				log.Error(err)
 				return
 			}
 		}
@@ -133,7 +167,10 @@ func (client *Client) writePump(wg *sync.WaitGroup) {
 func (client *Client) disconnect() {
 	client.wsServer.unregister <- client
 	close(client.send)
-	client.conn.Close()
+	if err := client.conn.Close(); err != nil {
+		log.Error(err)
+		return
+	}
 }
 
 func (client *Client) handleNewMessage(jsonMessage []byte) {

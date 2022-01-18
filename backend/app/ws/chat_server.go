@@ -58,14 +58,17 @@ func (server *WsServer) registerClient(client *Client) {
 func (server *WsServer) unregisterClient(client *Client) {
 	if _, ok := server.clients[client]; ok {
 		delete(server.clients, client)
-
 		// Remove user from repo
 		db, err := database.OpenDBConnection()
 		if err != nil {
 			log.Error(err)
 			return
 		}
-		db.SoftDeleteeUserByID(client.ID)
+		err = db.SoftDeleteeUserByID(client.ID)
+		if err != nil {
+			log.Error(err)
+			return
+		}
 
 		// Publish user left in PubSub
 		server.publishClientLeft(client)
@@ -147,7 +150,11 @@ func (server *WsServer) createRoom(name string, private bool) (*Room, error) {
 		log.Error("Something wrong with database connection")
 		return nil, err
 	}
-	db.CreateRoom(room)
+	err = db.CreateRoom(room)
+	if err != nil {
+		log.Error(err)
+		return nil, err
+	}
 
 	go room.RunRoom()
 	server.rooms[room] = true
