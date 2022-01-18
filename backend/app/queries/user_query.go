@@ -23,8 +23,10 @@ func (q *UserQueries) GetAllUsers() ([]repository.User, error) {
 		return nil, err
 	}
 	var repoUsers []repository.User
-	for _, user := range users {
-		repoUsers = append(repoUsers, &user)
+	for i := range users {
+		// solve gosec G601: Implicit memory aliasing of items from a range statement
+		// reference: https://stackoverflow.com/questions/62446118/implicit-memory-aliasing-in-for-loop/68247837
+		repoUsers = append(repoUsers, &users[i])
 	}
 
 	return repoUsers, nil
