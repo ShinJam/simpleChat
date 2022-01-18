@@ -78,6 +78,26 @@ reverse proxy를 사용한다면 socket 통신을 위해 설정을 해줘야 한
 - 연결을 닫지않고 연결 상태로 유지하도록 해야한다.
 ![websocket request](https://user-images.githubusercontent.com/38058085/149462229-eb6c95cf-8f10-41aa-87fd-9ad53aeea0e3.png)
 
+## User table 생성 불가
+user는 예약어기 때문에 user이름으로 table을 생성할 수 없다.
+따라서 schema를 생성하여 [schema안에서 table을 생성](https://stackoverflow.com/a/61137257/12364975)해준다.
+postgresql에서 schema는 namespace와 같다.
+
+# Tips
+## database
+### psql
+```
+\l - 전체 데이터베이스 조회
+\c - 데이터베이스 연결
+\dn - 전체 schema 조회
+\dt - public schema의 table 조회
+\dt schema1.* - schema1의 table 조회
+```
+### database namaing convention
+- table 이름
+  - 소문자
+  - 단수
+
 # Reference
 <details>
     <summary>내용 보기</summary>
@@ -97,4 +117,16 @@ reverse proxy를 사용한다면 socket 통신을 위해 설정을 해줘야 한
 
 ## 3rd Party API
 - [Twilio](https://www.twilio.com/docs/chat/rest)
+
+## database
+### schema
+- [Cannot create a database table named 'user' in PostgreSQL](https://stackoverflow.com/questions/22256124/cannot-create-a-database-table-named-user-in-postgresql)
+- [PostgreSQL 데이터베이스 & 스키마](https://m.blog.naver.com/PostView.naver?isHttpsRedirect=true&blogId=seuis398&logNo=70097173659)
+- [What is a PostgreSQL schema](What is a PostgreSQL schema)
+
+### naming convention
+- [How I Write SQL, Part 1: Naming Conventions](https://launchbylunch.com/posts/2014/Feb/16/sql-naming-conventions/)
+- [Table Naming Dilemma: Singular vs. Plural Names [closed]](https://stackoverflow.com/questions/338156/table-naming-dilemma-singular-vs-plural-names)
+
+
 </details>

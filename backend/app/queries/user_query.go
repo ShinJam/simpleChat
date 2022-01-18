@@ -16,7 +16,7 @@ type UserQueries struct {
 // GetAllUsers query for getting all users
 func (q *UserQueries) GetAllUsers() ([]repository.User, error) {
 	var users []models.User
-	err := q.Select(&users, `SELECT id, email FROM users WHERE user_status=1`)
+	err := q.Select(&users, `SELECT id, email FROM kuve.user WHERE user_status=1`)
 	if err != nil {
 		// Return empty object and error.
 		log.Error(err)
@@ -38,7 +38,7 @@ func (q *UserQueries) GetUserByID(id uuid.UUID) (models.User, error) {
 	user := models.User{}
 
 	// Define query string.
-	query := `SELECT * FROM users WHERE id = $1`
+	query := `SELECT * FROM kuve.user WHERE id = $1`
 
 	// Send query to database.
 	err := q.Get(&user, query, id)
@@ -57,7 +57,7 @@ func (q *UserQueries) GetUserByEmail(email string) (models.User, error) {
 	user := models.User{}
 
 	// Define query string.
-	query := `SELECT * FROM users WHERE email = $1`
+	query := `SELECT * FROM kuve.user WHERE email = $1`
 
 	// Send query to database.
 	err := q.Get(&user, query, email)
@@ -73,7 +73,7 @@ func (q *UserQueries) GetUserByEmail(email string) (models.User, error) {
 // CreateUser query for creating a new user by given email and password hash.
 func (q *UserQueries) CreateUser(u *models.User) error {
 	// Define query string.
-	query := `INSERT INTO users VALUES ($1, $2, $3, $4, $5, $6, $7)`
+	query := `INSERT INTO kuve.user VALUES ($1, $2, $3, $4, $5, $6, $7)`
 
 	// Send query to database.
 	_, err := q.Exec(
@@ -92,7 +92,7 @@ func (q *UserQueries) CreateUser(u *models.User) error {
 // DeleteeUser query for delete a new user by given id.
 func (q *UserQueries) SoftDeleteeUserByID(id uuid.UUID) error {
 	// Define query string.
-	query := `UPDATE users SET user_status=0 WHERE id = $1`
+	query := `UPDATE kuve.user SET user_status=0 WHERE id = $1`
 
 	_, err := q.Exec(query, id)
 
