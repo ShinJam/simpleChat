@@ -23,12 +23,12 @@ type Message struct {
 }
 
 func (message *Message) encode() []byte {
-	json, err := json.Marshal(message)
+	JSON, err := json.Marshal(message)
 	if err != nil {
 		log.Println(err)
 	}
 
-	return json
+	return JSON
 }
 
 func (message *Message) UnmarshalJSON(data []byte) error {

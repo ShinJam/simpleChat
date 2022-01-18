@@ -10,7 +10,9 @@ clean:
 	rm -rf ./build
 
 critic:
+	@rm -rf ./docs
 	gocritic check -enableAll ./...
+	@swag init
 
 security:
 	gosec ./...

@@ -127,10 +127,10 @@ func (server *WsServer) runRoomFromRepository(name string) (*Room, error) {
 	return room, nil
 }
 
-func (server *WsServer) findRoomByID(ID string) *Room {
+func (server *WsServer) findRoomByID(id string) *Room {
 	var foundRoom *Room
 	for room := range server.rooms {
-		if room.GetId() == ID {
+		if room.GetId() == id {
 			foundRoom = room
 			break
 		}
@@ -155,10 +155,10 @@ func (server *WsServer) createRoom(name string, private bool) (*Room, error) {
 	return room, nil
 }
 
-func (server *WsServer) findUserByID(ID string) repository.User {
+func (server *WsServer) findUserByID(id string) repository.User {
 	var foundUser repository.User
 	for _, client := range server.Users {
-		if client.GetId() == ID {
+		if client.GetId() == id {
 			foundUser = client
 			break
 		}
@@ -255,10 +255,10 @@ func (server *WsServer) handleUserLeft(message Message) {
 	server.broadcastToClients(message.encode())
 }
 
-func (server *WsServer) findClientByID(ID string) *Client {
+func (server *WsServer) findClientByID(id string) *Client {
 	var foundClient *Client
 	for client := range server.clients {
-		if client.GetId() == ID {
+		if client.GetId() == id {
 			foundClient = client
 			break
 		}
