@@ -43,6 +43,7 @@ $ npm install --save axios vue-axios
 ```
 
 ### vuex
+reference by: [Vue.js JWT Authentication with Vuex and Vue Router](https://www.bezkoder.com/jwt-vue-vuex-authentication/)
 ```
 $ npm install --save vuex@4.0.1
 ```
