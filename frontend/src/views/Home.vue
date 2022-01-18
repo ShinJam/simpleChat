@@ -71,7 +71,7 @@
                 <div class="msg_cotainer">
                   {{ message.message }}
                   <span class="msg_name" v-if="message.sender">{{
-                    message.sender.name
+                    message.sender.email
                   }}</span>
                 </div>
               </div>
