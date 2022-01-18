@@ -35,7 +35,6 @@
                   Send Message
                 </button>
               </div>
-
             </div>
           </div>
         </div>
@@ -121,22 +120,22 @@
 <script>
 import { onBeforeMount, reactive, computed } from "vue";
 import { useStore } from "vuex";
-import { useRouter } from "vue-router";
 
 export default {
   name: "Home",
   setup() {
-    const router = useRouter();
     const store = useStore();
     const state = reactive({
       ws: null,
       // serverUrl: "ws://" + location.host + "/ws/v1",
-      serverUrl: "ws://" + import.meta.env.VITE_API_URL+ "/ws/v1",
+      serverUrl: "ws://" + import.meta.env.VITE_API_URL + "/ws/v1",
       roomInput: null,
       rooms: [],
       users: [],
       currentUser: computed(() => store.state.auth.user),
-      usersList: computed(() => state.users.filter(user => user.email != state.currentUser.email))
+      usersList: computed(() =>
+        state.users.filter((user) => user.email != state.currentUser.email)
+      ),
     });
 
     onBeforeMount(() => {
@@ -144,7 +143,9 @@ export default {
     });
 
     const connectToWebsocket = () => {
-      state.ws = new WebSocket(state.serverUrl + "?email=" + state.currentUser.email);
+      state.ws = new WebSocket(
+        state.serverUrl + "?email=" + state.currentUser.email
+      );
       state.ws.addEventListener("open", (event) => {
         onWebsocketOpen(event);
       });
@@ -180,18 +181,28 @@ export default {
             break;
         }
       }
-    }
+    };
 
     const handleChatMessage = (msg) => {
       const room = findRoom(msg.target.id);
       if (typeof room !== "undefined") {
         room.messages.push(msg);
       }
-    }
+    };
 
-    const handleUserJoined =(msg) => {
-      state.users.push(msg.sender);
-    }
+    const handleUserJoined = (msg) => {
+      if (!userExists(msg.sender)) {
+        state.users.push(msg.sender);
+      }
+    };
+    const userExists = (user) => {
+      for (let i = 0; i < state.users.length; i++) {
+        if (state.users[i].id == user.id) {
+          return true;
+        }
+      }
+      return false;
+    };
 
     const handleUserLeft = (msg) => {
       for (let i = 0; i < state.users.length; i++) {
@@ -199,16 +210,16 @@ export default {
           state.users.splice(i, 1);
         }
       }
-    }
+    };
 
     const handleRoomJoined = (msg) => {
       const room = msg.target;
       room.name = room.private ? msg.sender.name : room.name;
       room["messages"] = [];
       state.rooms.push(room);
-    }
+    };
 
-    const sendMessage = (room) =>{
+    const sendMessage = (room) => {
       if (room.newMessage !== "") {
         state.ws.send(
           JSON.stringify({
@@ -222,7 +233,7 @@ export default {
         );
         room.newMessage = "";
       }
-    }
+    };
 
     const findRoom = (roomId) => {
       for (let i = 0; i < state.rooms.length; i++) {
@@ -230,14 +241,14 @@ export default {
           return state.rooms[i];
         }
       }
-    }
+    };
 
-    const joinRoom = () =>{
+    const joinRoom = () => {
       state.ws.send(
         JSON.stringify({ action: "join-room", message: state.roomInput })
       );
       state.roomInput = "";
-    }
+    };
 
     const leaveRoom = (room) => {
       state.ws.send(JSON.stringify({ action: "leave-room", message: room.id }));
@@ -248,22 +259,21 @@ export default {
           break;
         }
       }
-    }
+    };
 
     const joinPrivateRoom = (room) => {
       state.ws.send(
         JSON.stringify({ action: "join-room-private", message: room.id })
       );
-    }
-
+    };
 
     return {
       state,
       joinRoom,
       joinPrivateRoom,
       leaveRoom,
-      sendMessage
+      sendMessage,
     };
-  }
+  },
 };
 </script>
