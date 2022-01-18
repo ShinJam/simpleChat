@@ -1,84 +1,75 @@
-# simpleChat
+# simpleChat API
+> built with [cgapp](https://github.com/create-go-app/cli)
 
-<img src="https://img.shields.io/badge/Go-1.17+-00ADD8?style=for-the-badge&logo=go" alt="go version" />&nbsp;<img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge&logo=none" alt="license" />
+Monolithic API
 
-# Features
-- Authentication
-  - JWT
-- Chat
-  - 1:1
-  - n:n
-## TL;DR
-### Frontend
-- Vue3를 사용한 UI 구성
-- Vuex를 사용하여 상태관리
-- bootstrap5를 사용한 style
-- Websocket으로 socket 통신
+# Structure
+```
+.
+├── app
+│   ├── controllers
+│   ├── models
+│   └── queries
+├── docker
+├── docs
+├── main.go
+├── pkg
+│   ├── configs
+│   ├── middleware
+│   ├── repository
+│   ├── routes
+│   └── utils
+├── platform
+│   ├── cache
+│   ├── database
+│   └── migrations
+└── rest
+    ├── auth.http
+    └── main.http
+```
+## ./app
+비지니스 로직만을 다루는 폴더 입니다.
+어떤 데이터베이스 드라이버를 쓰는지, cache 전략을 갖고 있는지 혹은 third-party 등을 다루지 않습니다.
+- `./app/controllers` router에서 사용되는 함수 단위의 contoller를 정의합니다. Fiber의 Handler에 해당합니다.
+- `./app/models` 비지니스 모델 및 메소드를 정의 합니다. request 및, response에 해당합니다.
 
-### Backend
-- Go Fiber로 API 구현
-- postgres로 유저, 채팅 정보 저장
-- [golang-migrate/migrate](https://github.com/golang-migrate/migrate)로 migration 관리
-- [sqlx](https://github.com/jmoiron/sqlx)를 사용하여 query 요청
-- redis로 pub/sub 구현
-# ⚡️ Goal of project
+## ./docs
+API 문서를 포함합니다. swager가 자동으로 생성합니다.
 
-- 고가용성 인프라 구축을 위한 간단한 Application 개발
-- Messaging Architecture 구축(i.e. Redis, Kafka, RabbitMQ)
+## ./pkg
 
-# Solutions
-## k8s
-부하 분산을 위해 로드벨런서를 사용하고 그에 따른 서버 스케일 아웃을 및 오케스트레이션을 위한 kubernetes 사용
-## Websocket
-실시간 양방향 채팅을 위해 socket 통신을 구현한다. webRTC를 사용할 수 도 있지만 최소한의 개발을 위해 자료가 많고 client 개발에 대한 이해도가 낮기 때문에 socket으로 선택
-## Redis
-그룹 채팅을 귀현하기 위해서는 그룹에 있는 모든 사람들에게 메세지를 전달해야 한다. 따라서 pub/sub을 할수 있고 가장 간단하고 이해가 편한 redis를 사용한다. kafka, RabbitMQ 등 다양한 메세징 솔루션들이 있다. 정확한 차이는 추후 더 알아봐야 한다.
+프로젝트에 특정지어지는 기능들을 포함합니다. configs, middleware, routes, utils와 같이 비지니스에 사용되는 코드들이 해당합니다.
 
-# Designs
-## UI Flow Chart
-![UI Flow Chart](https://user-images.githubusercontent.com/38058085/149257784-bf663846-cade-4c85-8eb0-5e0946af7f8c.png)
-- 단순하게 유저 인증관련 화면과 채팅에 접속할 수 있는 화면으로 구성
-## Message Flow Chart
-![Message Flow Chart](https://user-images.githubusercontent.com/38058085/149257051-d4461d44-9010-4135-b935-8653c4336444.png)
+- `./pkg/configs` configuration가 정의됩니다. i.e. readTimeout
+- `./pkg/middleware` middleware에 해당합니다. i.e. logger, cors
+- `./pkg/repository` const 값이 정의됩니다. i.e. enum values
+- `./pkg/routes` handler들을 routing합니다.
+- `./pkg/utils`  utility를 포합합니다. i.e. server starter, error checker, etc
 
-- Monolithic으로 구현 되었기 때문에 하나의 컨테이너안에 ws와 http 요청을 같이 받는다.
-- User가 chat room에 입장하면 해당 room을 subscribe 하게 된다.
-- 메세지를 보내면 redis에서 publish 하게 되면서 채팅방에 메세지가 보이게 된다.
+## .platform
+platform level의 로직을 포함합니다. 실제로 프로젝트를 서비스하기 위해 필요한 기반 로직을 다룹니다. database나 cache등이 있습니다.
 
-# 📦 Built With
-- go 1.17+
-- [Fiber v2](https://github.com/gofiber/fiber)
-- postgresql 14.1
-- redis 6.2
-- vue 3.x.x
-
-# Todo
-<details>
-    <summary>내용 보기</summary>
-
-- [ ] MSA
-- [ ] Unit Test
-- [ ] Load/Stress/Performance Test
-- [ ] Coverage
-- [ ] gosec
-- [ ] goreport
-- [ ] Add Change Log
-- [ ] CI/CD
-- [ ] Mornitoring
-- [ ] Pub/Sub
-- [ ] k8s
-- [ ] NoSQL
-- [ ] Snowflake
-- [ ] Terraform
-
-</details>
-
+- `./platform/database` database의 connection를 관리합니다.
+- `./platform/migrations` migrations 파일을 관리합니다.
+- `./platform/cache` cache connection을 관리합니다.
 
 # Reference
 <details>
     <summary>내용 보기</summary>
 
-## Planning
-- [인앱 채팅 기획하기](https://brunch.co.kr/@eunbeecho/34)
+## System Design
 
+- [Building a simple Chat application with WebSockets in Go and Vue.js](https://www.whichdev.com/go-vuejs-chat/)
+- [design a chat system](https://systeminterview.com/design-a-chat-system.php)
+- [Ace the System Interview— Design a Chat Application](https://towardsdatascience.com/ace-the-system-interview-design-a-chat-application-3f34fd5b85d0)
+- [A Microservices-based Chat Backend – System Design](https://mmaresch.com/index.php/2020/01/15/a-microservices-based-chat-backend-system-design/)
+- [What I've learned from Signal server source code](https://softwaremill.com/what-ive-learned-from-signal-server-source-code/)
+- [실시간 댓글 개발기(part.1) – DAU 60만 Alex 댓글의 실시간 댓글을 위한 이벤트 기반 아키텍처](https://tech.kakao.com/2020/06/08/websocket-part1/)
+- [How to Make a Messaging App like WhatsApp, Telegram, Slack (Updated)](https://www.simform.com/blog/how-to-build-messaging-app-whatsapp-telegram-slack/)
+- [LINE LIVE 채팅 기능의 기반이 되는 아키텍처
+](https://engineering.linecorp.com/ko/blog/the-architecture-behind-chatting-on-line-live/)
+- [Making my Socket.io chat app production ready with Vue.js, DynamoDB, CodePipeline, and CodeBuild](https://medium.com/containers-on-aws/making-my-socket-io-chat-app-production-ready-with-vue-js-dynamodb-codepipeline-and-codebuild-e6cd24b4b79e)
+
+## 3rd Party API
+- [Twilio](https://www.twilio.com/docs/chat/rest)
 </details>
