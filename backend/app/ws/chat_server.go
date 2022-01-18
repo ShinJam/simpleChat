@@ -150,6 +150,7 @@ func (server *WsServer) createRoom(name string, private bool) (*Room, error) {
 		log.Error("Something wrong with database connection")
 		return nil, err
 	}
+	log.Print(room)
 	err = db.CreateRoom(room)
 	if err != nil {
 		log.Error(err)

@@ -1,6 +1,0 @@
--- Create room table
-CREATE TABLE IF NOT EXISTS rooms (
-  id VARCHAR(255) NOT NULL PRIMARY KEY,
-  name VARCHAR(255) NOT NULL,
-  private SMALLINT NULL
-);
