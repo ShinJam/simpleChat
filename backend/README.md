@@ -83,6 +83,23 @@ user는 예약어기 때문에 user이름으로 table을 생성할 수 없다.
 따라서 schema를 생성하여 [schema안에서 table을 생성](https://stackoverflow.com/a/61137257/12364975)해준다.
 postgresql에서 schema는 namespace와 같다.
 
+## Integration Test:Redis
+api 테스트 작성중 redis 연결을 mock해야 하는 문제 발생
+- 해결
+  - 함수를 overwrite를 할 수 없기 때문에 임시로 띄운 redis를 사용하는 방법으로 해결
+  - [miniredis](https://github.com/alicebob/miniredis)사용하여 unit test용 redis 실행
+- 개선
+  - redis interface를 만들어서 유연하게 함수들이 유연하게 mock 될수 있도록 리팩토링
+
+## Integration Test:SQL
+api 테스트중 db에 접근을 mock해야 하는 문제 발생
+- 해결
+  - [go-sqlmock](https://github.com/DATA-DOG/go-sqlmock)를 사용하여 query를 mock하여 해결
+- 개선
+  - redis 처럼 테스트코드에서 redis를 띄우는것이 아닌 database가 실행 되어있어야 하는문제
+  - [dockertest](https://github.com/ory/dockertest)를 사용하면 해결 될 것 같다.
+
+
 # Tips
 ## database
 ### psql
@@ -128,5 +145,14 @@ postgresql에서 schema는 namespace와 같다.
 - [How I Write SQL, Part 1: Naming Conventions](https://launchbylunch.com/posts/2014/Feb/16/sql-naming-conventions/)
 - [Table Naming Dilemma: Singular vs. Plural Names [closed]](https://stackoverflow.com/questions/338156/table-naming-dilemma-singular-vs-plural-names)
 
+## Tests
+- [Golang의 test 이야기](https://sang5c.tistory.com/60)
+- [Understanding Unit and Integration Testing in Golang.](https://medium.com/@victorsteven/understanding-unit-and-integrationtesting-in-golang-ba60becb778d)
+### SQL Test
+- [Unit Test (SQL) in Golang](https://medium.com/easyread/unit-test-sql-in-golang-5af19075e68e))
+- [Understanding Unit and Integration Testing in Golang.](https://medium.com/@victorsteven/understanding-unit-and-integrationtesting-in-golang-ba60becb778d)
+### Redis Test
+- [Unit Test (Redis) in Golang](https://medium.com/easyread/unit-test-redis-in-golang-c22b5589ea37)
+- [[golang] go-redis, redis-mock 사용법 및 예제(suite 사용법)](https://frozenpond.tistory.com/164)
 
 </details>

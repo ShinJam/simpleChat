@@ -9,7 +9,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://{{host}}/api/{{version}}/user/sign/in HTTP/1.1
+POST http://localhost:5000/api/{{version}}/user/sign/in HTTP/1.1
 Content-Type: application/json
 
 {

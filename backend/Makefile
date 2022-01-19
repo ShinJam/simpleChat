@@ -23,6 +23,10 @@ lint:
 build:
 	CGO_ENABLED=0 go build -ldflags="-w -s" -o $(BUILD_DIR)/$(APP_NAME) main.go
 
+test: clean critic security lint
+	go test -v -timeout 30s -coverprofile=cover.out -cover ./...
+	go tool cover -func=cover.out
+
 run: swag build
 	$(BUILD_DIR)/$(APP_NAME)
 
