@@ -1,0 +1,5 @@
+- id: RAW=uuid_generate_v4()
+  email: guest1@test.com
+  password_hash: $2a$04$Pyx7UP.6SYSvc8zcmK3XZuTx2vp8.i6kiC55DV6k1iAki1qUVa2Ym
+  user_status: 1
+  user_role: user
