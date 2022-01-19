@@ -14,7 +14,6 @@ import (
 )
 
 // @title API
-// @version 1.0
 // @description This is an auto-generated API Docs.
 // @termsOfService http://swagger.io/terms/
 // @contact.name shin
