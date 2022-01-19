@@ -95,9 +95,15 @@ api 테스트 작성중 redis 연결을 mock해야 하는 문제 발생
 api 테스트중 db에 접근을 mock해야 하는 문제 발생
 - 해결
   - [go-sqlmock](https://github.com/DATA-DOG/go-sqlmock)를 사용하여 query를 mock하여 해결
-- 개선
-  - redis 처럼 테스트코드에서 redis를 띄우는것이 아닌 database가 실행 되어있어야 하는문제
-  - [dockertest](https://github.com/ory/dockertest)를 사용하면 해결 될 것 같다.
+  - [dockertest](https://github.com/ory/dockertest)를 사용하면 테스트 디비 실행
+  - [textfixtures](https://github.com/go-testfixtures/testfixtures)를 사용하여 테스트 데이터 준비
+    - [factory-go](https://github.com/bluele/factory-go)라는 라이브러리도 있다.
+
+
+## zero value
+updated_at이 nullable인데 User 모델에서 nullable하지 않은 type을 받고 있어 아래와 같은 에러가 발생했다.
+`Scan error: unsupported Scan, storing driver.Value type <nil> into type time.Time`
+sql.NullString 타입으로 바꿔줄 수 있지만 잘 사용되지 않는 필드고 편리한 방법으로 포인터를 사용하여 해결했다. 이 방법은 nil-safeness를 포기하는 방법이다.
 
 
 # Tips
@@ -114,6 +120,10 @@ api 테스트중 db에 접근을 mock해야 하는 문제 발생
 - table 이름
   - 소문자
   - 단수
+
+## build exclude directories
+go가 build 할 때 directory 앞에 _가 붙어있거나 testdata [디렉토리는 제외](https://github.com/golang/go/issues/30058#issuecomment-459888562)한다.
+
 
 # Reference
 <details>
@@ -145,14 +155,22 @@ api 테스트중 db에 접근을 mock해야 하는 문제 발생
 - [How I Write SQL, Part 1: Naming Conventions](https://launchbylunch.com/posts/2014/Feb/16/sql-naming-conventions/)
 - [Table Naming Dilemma: Singular vs. Plural Names [closed]](https://stackoverflow.com/questions/338156/table-naming-dilemma-singular-vs-plural-names)
 
+### zero value
+- [Golang에서 nullable한 값 잘 처리하기](https://blog.billo.io/devposts/nil_for_go/)
+- [initialize string pointer in struct [duplicate]](https://stackoverflow.com/a/42594822/12364975)
+
 ## Tests
+- [5 Testing Tips in Go](https://medium.com/star-gazers/5-testing-tips-in-go-3b7f79a546da)
 - [Golang의 test 이야기](https://sang5c.tistory.com/60)
 - [Understanding Unit and Integration Testing in Golang.](https://medium.com/@victorsteven/understanding-unit-and-integrationtesting-in-golang-ba60becb778d)
+- [Testing REST API in Go with Testify and Mockery](https://medium.com/nerd-for-tech/testing-rest-api-in-go-with-testify-and-mockery-c31ea2cc88f9)
+- [Testing database interactions using Go](https://romanyx90.medium.com/testing-database-interactions-using-go-d9512b6bb449)
 ### SQL Test
+- [Mocking sqlx pkg for testing](https://github.com/jmoiron/sqlx/issues/204)
 - [Unit Test (SQL) in Golang](https://medium.com/easyread/unit-test-sql-in-golang-5af19075e68e))
-- [Understanding Unit and Integration Testing in Golang.](https://medium.com/@victorsteven/understanding-unit-and-integrationtesting-in-golang-ba60becb778d)
 ### Redis Test
 - [Unit Test (Redis) in Golang](https://medium.com/easyread/unit-test-redis-in-golang-c22b5589ea37)
 - [[golang] go-redis, redis-mock 사용법 및 예제(suite 사용법)](https://frozenpond.tistory.com/164)
+
 
 </details>
