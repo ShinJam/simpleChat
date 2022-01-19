@@ -36,7 +36,6 @@ info:
     url: https://github.com/shinjam/simpleChat/LICENSE
   termsOfService: http://swagger.io/terms/
   title: API
-  version: "1.0"
 paths:
   /v1/token/renew:
     post:

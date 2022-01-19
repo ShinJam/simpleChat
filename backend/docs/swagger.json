@@ -11,8 +11,7 @@
         "license": {
             "name": "MIT",
             "url": "https://github.com/shinjam/simpleChat/LICENSE"
-        },
-        "version": "1.0"
+        }
     },
     "basePath": "/api",
     "paths": {
