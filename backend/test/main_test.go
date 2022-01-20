@@ -104,7 +104,10 @@ func RunTestDatabase() (*dockertest.Pool, *dockertest.Resource) {
 	os.Setenv("DATABASE_URL", databaseUrl)
 	log.Print("Connecting to database on url: ", databaseUrl)
 
-	resource.Expire(120) // Tell docker to hard kill the container in 120 seconds
+	err = resource.Expire(120)
+	if err != nil {
+		log.Error(err)
+	} // Tell docker to hard kill the container in 120 seconds
 
 	// exponential backoff-retry, because the application in the container might not be ready to accept connections yet
 	pool.MaxWait = 120 * time.Second
@@ -122,7 +125,7 @@ func RunTestDatabase() (*dockertest.Pool, *dockertest.Resource) {
 }
 
 func MigrateUp() {
-	fileURL := fmt.Sprint("file://" + configs.RootDir + "/platform/migrations")
+	fileURL := "file://" + configs.RootDir + "/platform/migrations"
 	log.Print(fileURL)
 	m, err := migrate.New(
 		fileURL,
