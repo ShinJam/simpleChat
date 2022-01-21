@@ -4,9 +4,13 @@ on:
   push:
     branches:
       - develop
+    paths:
+      - "**.go"
   pull_request:
     branches:
       - main
+    paths:
+      - "**.go"
 
 jobs:
   golangci:

@@ -9,14 +9,13 @@ on:
   push:
     branches:
       - develop
-    # paths:
-    #   - "**.go"
-
+    paths:
+      - "**.go"
   pull_request:
     branches:
       - develop
-    # paths:
-    #   - "**.go"
+    paths:
+      - "**.go"
 env:
   GOPROXY: "https://proxy.company.com"
 
