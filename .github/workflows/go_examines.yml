@@ -1,9 +1,4 @@
 name: "examines-go-source"
-# references
-# - https://github.com/create-go-app/cli/blob/master/.github/workflows/testing_build.yml
-# - https://staticcheck.io/docs/running-staticcheck/github-actions/
-# - https://blog.kowalczyk.info/article/8dd9c2c0413047c589a321b1ccba7129/using-github-actions-with-go.html
-# - https://fe-developers.kakaoent.com/2022/220106-github-actions/
 
 on:
   push:
