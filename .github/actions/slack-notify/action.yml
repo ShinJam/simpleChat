@@ -1,0 +1,32 @@
+name: 'slack-notify'
+description: action composite for notify github action status
+
+inputs:
+  status:
+    description: triggering when fail or success
+    required: false
+    default: 'failure'
+  slack_incoming_url:
+    description: slack webhook url
+    required: true
+
+runs:
+  using: 'composite'
+
+  steps:
+    # github icon: https://icons8.com/icons/set/github
+    - name: Send slack
+      shell: bash
+      run: |
+        if [ "${{ inputs.status }}" = "success" ]; then
+          EMOTICON="✅"
+        else
+          EMOTICON="⛔"
+        fi
+
+        USERNAME="GITHUB-ACTION"
+        ICON_URL="https://img.icons8.com/plasticine/200/000000/github.png"
+
+        MSG="{\"username\": \"${USERNAME}\", \"icon_url\": \"${ICON_URL}\", \"text\":\">${EMOTICON} workflow (<https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}|${GITHUB_WORKFLOW}>) in <https://github.com/${GITHUB_REPOSITORY}|${GITHUB_REPOSITORY}>\n><https://github.com/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA}/checks|${GITHUB_JOB}> job ${{ inputs.status }}, branch=\`${GITHUB_REF#refs/heads/}\`\"}"
+
+        curl -X POST -H 'Content-type: application/json' --data "${MSG}" "${{ inputs.slack_incoming_url }}"
