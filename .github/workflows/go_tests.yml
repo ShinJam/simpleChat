@@ -57,24 +57,6 @@ jobs:
           ${{ runner.OS }}-
 
     - name: Test
-      run: go test -v -cover -race -timeout 120s ./...
+      run: go test -vet=off -v -cover -race -timeout 120s ./...
       if: ${{ always() }}
-
-    - name: Examines code using vet
-      run: go vet ./...
-      if: ${{ always() }}
-
-    - name: Examines code using staticcheck # https://github.com/reviewdog/action-staticcheck
-      uses: reviewdog/action-staticcheck@v1
-      with:
-        github_token: ${{ secrets.KUVE_WORKFLOW }}
-        # Change reviewdog reporter if you need [github-pr-check,github-check,github-pr-review].
-        reporter: github-pr-review
-        # Report all results.
-        filter_mode: nofilter
-        # Exit with 1 when it find at least one finding.
-        fail_on_error: false
-        workdir: ./backend
-      if: ${{ always() }}
-
 
