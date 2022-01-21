@@ -8,17 +8,15 @@ terraform {
       version = "~> 3.0"
     }
   }
+  cloud {
+    organization = "kuve"
+
+    workspaces {
+      name = "simpleChat-staging"
+    }
+  }
 }
 
-# terraform {
-#   backend "remote" {
-#     organization = "mspw"
-
-#     workspaces {
-#       name = "alyke-staging"
-#     }
-#   }
-# }
 
 # https://www.terraform.io/docs/language/values/locals.html
 # locals {
