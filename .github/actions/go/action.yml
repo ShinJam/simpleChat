@@ -1,0 +1,29 @@
+name: 'go-environment-composite'
+description: composite for go environment
+
+inputs:
+  go-version:
+    description: go version
+    required: false
+    default: 1.17.x
+
+runs:
+  using: 'composite'
+
+  steps:
+    -
+      name: Set up Go 1.x
+      uses: WillAbides/setup-go-faster@v1.7.0
+      with:
+        go-version: ${{ inputs.go-version }}
+      id: go
+    -
+      name: Cache Go modules
+      uses: actions/cache@preview
+      with:
+        path: ~/go/pkg/mod
+        key: ${{ runner.os }}-build-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.OS }}-build-${{ env.cache-name }}-
+          ${{ runner.OS }}-build-
+          ${{ runner.OS }}-
