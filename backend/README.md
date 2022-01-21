@@ -130,7 +130,6 @@ go가 build 할 때 directory 앞에 _가 붙어있거나 testdata [디렉토리
   - [action-staticcheck](https://github.com/reviewdog/action-staticcheck) action을 사용하여 review에 남겨질수 있도록 추가
   - [golangcli-lint-aciton](https://github.com/golangci/golangci-lint-action)를 사용하여 go lint 검사
 - composite를 사용하여 중복되는 코드 제거
-- `GOPROXY: "https://proxy.company.com"`를 사용하여 package 다운로드 속도를 높힌다. 2~3 초 가량 감소
 - `actions/cache@preview`를 사용하여 패키지다운로드 한것을 caching하여 속도 개선 3~5초 감소
 - action 성공여부를 slack notification 전송
   <img width="487" alt="Screen Shot 2022-01-21 at 4 30 44 PM" src="https://user-images.githubusercontent.com/38058085/150485093-7d14b607-75c9-45a1-a513-758fa3c2377d.png">
