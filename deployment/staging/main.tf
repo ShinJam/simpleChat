@@ -39,11 +39,3 @@ resource "aws_instance" "example" {
   instance_type = "t2.micro"
   ami           = var.image_id
 }
-
-# resource "aws_vpc" "main" {
-#   cidr_block = "10.0.0.0/16"
-
-#   tags = {
-#     Name = "staging"
-#   }
-# }
