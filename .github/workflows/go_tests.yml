@@ -11,8 +11,6 @@ on:
       - develop
     paths:
       - "**.go"
-env:
-  GOPROXY: "https://proxy.company.com"
 
 jobs:
   testing:
