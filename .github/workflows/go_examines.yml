@@ -1,0 +1,97 @@
+name: "examines-go-source"
+# references
+# - https://github.com/create-go-app/cli/blob/master/.github/workflows/testing_build.yml
+# - https://staticcheck.io/docs/running-staticcheck/github-actions/
+# - https://blog.kowalczyk.info/article/8dd9c2c0413047c589a321b1ccba7129/using-github-actions-with-go.html
+# - https://fe-developers.kakaoent.com/2022/220106-github-actions/
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - "**.go"
+  pull_request:
+    branches:
+      - develop
+    paths:
+      - "**.go"
+env:
+  GOPROXY: "https://proxy.company.com"
+
+jobs:
+  vet:
+    name: go vet
+    defaults:
+      run:
+        working-directory: ./backend
+
+    runs-on: ubuntu-latest
+
+    steps:
+    -
+      name: Check out code into the Go module directory
+      uses: actions/checkout@v2
+    -
+      name: Prepare go environment
+      uses: ./.github/actions/go
+    -
+      name: Examines code using vet
+      run: go vet ./...
+      if: ${{ always() }}
+    -
+      name: Send slack when failed
+      if: ${{ failure() }}
+      uses: ./.github/actions/slack-notify
+      with:
+        slack_incoming_url: ${{ secrets.SLACK_NOTIFY_GH_ACTIONS }}
+    -
+      name: Send slack if completed
+      if: ${{ success() }}
+      uses: ./.github/actions/slack-notify
+      with:
+        status: success
+        slack_incoming_url: ${{ secrets.SLACK_NOTIFY_GH_ACTIONS }}
+
+
+  staticcheck:
+    name: go staticcheck
+    defaults:
+      run:
+        working-directory: ./backend
+
+    runs-on: ubuntu-latest
+
+    steps:
+    -
+      name: Check out code into the Go module directory
+      uses: actions/checkout@v2
+    -
+      name: Prepare go environment
+      uses: ./.github/actions/go
+    -
+      name: Examines code using staticcheck # https://github.com/reviewdog/action-staticcheck
+      uses: reviewdog/action-staticcheck@v1
+      with:
+        github_token: ${{ secrets.KUVE_WORKFLOW }}
+        # Change reviewdog reporter if you need [github-pr-check,github-check,github-pr-review].
+        reporter: github-pr-review
+        # Report all results.
+        filter_mode: nofilter
+        # Exit with 1 when it find at least one finding.
+        fail_on_error: false
+        workdir: ./backend
+      if: ${{ always() }}
+    -
+      name: Send slack when failed
+      if: ${{ failure() }}
+      uses: ./.github/actions/slack-notify
+      with:
+        slack_incoming_url: ${{ secrets.SLACK_NOTIFY_GH_ACTIONS }}
+    -
+      name: Send slack if completed
+      if: ${{ success() }}
+      uses: ./.github/actions/slack-notify
+      with:
+        status: success
+        slack_incoming_url: ${{ secrets.SLACK_NOTIFY_GH_ACTIONS }}

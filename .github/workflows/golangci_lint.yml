@@ -1,0 +1,41 @@
+name: Linting
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - "**.go"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "**.go"
+
+jobs:
+  golangci:
+    name: Linting Go code
+
+    runs-on: ubuntu-latest
+
+    steps:
+      -
+        uses: actions/checkout@v2
+      -
+        name: golangci-lint
+        uses: golangci/golangci-lint-action@v2
+        with:
+          version: latest
+      -
+        name: Send slack when failed
+        if: ${{ failure() }}
+        uses: ./.github/actions/slack-notify
+        with:
+          slack_incoming_url: ${{ secrets.SLACK_NOTIFY_GH_ACTIONS }}
+      -
+        name: Send slack if completed
+        if: ${{ success() }}
+        uses: ./.github/actions/slack-notify
+        with:
+          status: success
+          slack_incoming_url: ${{ secrets.SLACK_NOTIFY_GH_ACTIONS }}
