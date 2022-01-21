@@ -33,9 +33,14 @@ terraform {
 # Provider
 ####################################
 provider "aws" {
-  region = "ap-northeast-2"
+  region = var.region
 }
-resource "aws_instance" "example" {
-  instance_type = "t2.micro"
+
+resource "aws_instance" "api-server" {
   ami           = var.image_id
+  instance_type = "t2.micro"
+
+  tags = {
+    Name = "staging"
+  }
 }
