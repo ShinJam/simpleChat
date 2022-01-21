@@ -124,6 +124,16 @@ sql.NullString 타입으로 바꿔줄 수 있지만 잘 사용되지 않는 필�
 ## build exclude directories
 go가 build 할 때 directory 앞에 _가 붙어있거나 testdata [디렉토리는 제외](https://github.com/golang/go/issues/30058#issuecomment-459888562)한다.
 
+## CI
+- test code, vet, staticcheck, golint, commitlint action 구현
+  - test와 와 vet이많이 느리다. #16
+  - [action-staticcheck](https://github.com/reviewdog/action-staticcheck) action을 사용하여 review에 남겨질수 있도록 추가
+  - [golangcli-lint-aciton](https://github.com/golangci/golangci-lint-action)를 사용하여 go lint 검사
+- composite를 사용하여 중복되는 코드 제거
+- `GOPROXY: "https://proxy.company.com"`를 사용하여 package 다운로드 속도를 높힌다. 2~3 초 가량 감소
+- `actions/cache@preview`를 사용하여 패키지다운로드 한것을 caching하여 속도 개선 3~5초 감소
+- action 성공여부를 slack notification 전송
+  <img width="487" alt="Screen Shot 2022-01-21 at 4 30 44 PM" src="https://user-images.githubusercontent.com/38058085/150485093-7d14b607-75c9-45a1-a513-758fa3c2377d.png">
 
 # Reference
 <details>
@@ -171,6 +181,13 @@ go가 build 할 때 directory 앞에 _가 붙어있거나 testdata [디렉토리
 ### Redis Test
 - [Unit Test (Redis) in Golang](https://medium.com/easyread/unit-test-redis-in-golang-c22b5589ea37)
 - [[golang] go-redis, redis-mock 사용법 및 예제(suite 사용법)](https://frozenpond.tistory.com/164)
+
+## CI
+- [카카오웹툰은 GitHub Actions를 어떻게 사용하고 있을까?](https://fe-developers.kakaoent.com/2022/220106-github-actions/)
+- [Using GitHub Actions with Go](https://blog.kowalczyk.info/article/8dd9c2c0413047c589a321b1ccba7129/using-github-actions-with-go.html)
+- [github-actions-golang](https://github.com/mvdan/github-actions-golang)
+### GOPROXY
+- [Why GOPROXY Matters and Which to Pick](https://jfrog.com/blog/why-goproxy-matters-and-which-to-pick/)
 
 
 </details>
