@@ -21,10 +21,3 @@ jobs:
         uses: ./.github/actions/slack-notify
         with:
           slack_incoming_url: ${{ secrets.SLACK_NOTIFY_GH_ACTIONS }}
-
-      - name: Send slack if completed
-        if: ${{ success() }}
-        uses: ./.github/actions/slack-notify
-        with:
-          status: success
-          slack_incoming_url: ${{ secrets.SLACK_NOTIFY_GH_ACTIONS }}
