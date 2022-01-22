@@ -3,17 +3,17 @@ name: "Terraform"
 on:
   push:
     branches:
-      - main
+      - staging
   pull_request:
     paths:
-      - "deployment/staging/**"
+      - "terraform/**"
 
 jobs:
   terraform:
     name: "Terraform"
     defaults:
       run:
-        working-directory: ./deployment/staging
+        working-directory: ./terraform
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

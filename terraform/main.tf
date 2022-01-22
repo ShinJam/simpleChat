@@ -12,22 +12,22 @@ terraform {
     organization = "kuve"
 
     workspaces {
-      name = "simpleChat-staging"
+      name = "staging"
     }
   }
 }
 
 
 # https://www.terraform.io/docs/language/values/locals.html
-# locals {
-#   # Name, TerraformPath, VPC, Creator 추가 필요
-#   common_tags = {
-#     TerraformManaged : true,
-#     Environment : var.environment
-#     Project : var.name
-#     Team : "developers"
-#   }
-# }
+locals {
+  # Name, TerraformPath, VPC, Creator 추가 필요
+  common_tags = {
+    TerraformManaged : true,
+    Environment : "staging"
+    Project : "kuve"
+  }
+}
+
 
 ####################################
 # Provider
@@ -44,3 +44,4 @@ resource "aws_instance" "api-server" {
     Name = "staging"
   }
 }
+
