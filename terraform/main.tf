@@ -42,3 +42,4 @@ resource "aws_instance" "api-server" {
     Name = local.common_tags.Environment
   }
 }
+
