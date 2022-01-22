@@ -3,7 +3,6 @@ variable "region" {
   description = "AWS region"
 }
 
-
 variable "image_id" {
   type = string
 }
