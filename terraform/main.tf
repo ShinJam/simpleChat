@@ -36,7 +36,7 @@ provider "aws" {
 
 resource "aws_instance" "api-server" {
   ami           = var.image_id
-  instance_type = "t2.micro"
+  instance_type = "t2.nano"
 
   tags = {
     Name = local.common_tags.Environment
