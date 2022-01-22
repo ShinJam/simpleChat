@@ -34,12 +34,11 @@ provider "aws" {
   region = var.region
 }
 
-resource "aws_instance" "api-server" {
-  ami           = var.image_id
-  instance_type = "t2.nano"
+# resource "aws_instance" "api-server" {
+#   ami           = var.image_id
+#   instance_type = "t2.nano"
 
-  tags = {
-    Name = local.common_tags.Environment
-  }
-}
-
+#   tags = {
+#     Name = local.common_tags.Environment
+#   }
+# }
