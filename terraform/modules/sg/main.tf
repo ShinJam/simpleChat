@@ -9,6 +9,9 @@ module "ec2_sg" {
   use_name_prefix = "false"
 
   ingress_cidr_blocks = ["0.0.0.0/0"]
+  ingress_rules       = ["https-443-tcp", "http-80-tcp", "ssh-tcp"]
+  egress_cidr_blocks  = ["0.0.0.0/0"]
+  egress_rules        = ["all-all"]
 
   tags = var.tags
 }
