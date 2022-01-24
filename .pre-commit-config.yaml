@@ -1,0 +1,20 @@
+exclude: '.git|.direnv|.old-tfiles'
+default_stages: [commit]
+fail_fast: true
+
+repos:
+- repo: https://github.com/antonbabenko/pre-commit-terraform
+  rev: v1.62.3 # Get the latest from: https://github.com/antonbabenko/pre-commit-terraform/releases
+  hooks:
+    - id: terraform_fmt
+      files: ^terraform/
+    - id: terraform_docs
+      files: ^terraform/
+    - id: terraform_validate
+      files: ^terraform/
+    - id: terraform_tflint
+      files: ^terraform/
+    - id: terraform_tfsec
+      files: ^terraform/
+    - id: checkov
+      files: ^terraform/
