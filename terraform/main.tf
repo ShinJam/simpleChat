@@ -19,6 +19,7 @@ terraform {
 
 # https://www.terraform.io/docs/language/values/locals.html
 locals {
+  name = "kuve"
   # Name, TerraformPath, VPC, Creator 추가 필요
   common_tags = {
     TerraformManaged : true,
@@ -27,6 +28,7 @@ locals {
   }
 }
 
+
 ####################################
 # Provider
 ####################################
@@ -34,11 +36,19 @@ provider "aws" {
   region = var.region
 }
 
-# resource "aws_instance" "api-server" {
-#   ami           = var.image_id
-#   instance_type = "t2.nano"
 
-#   tags = {
-#     Name = local.common_tags.Environment
-#   }
-# }
+###################################
+# VPC
+###################################
+module "vpc" {
+  source = "./modules/vpc"
+
+  name = local.name
+  cidr = var.cidr
+
+  azs             = var.azs
+  public_subnets  = var.public_subnets
+  private_subnets = var.private_subnets
+
+  tags = local.common_tags
+}

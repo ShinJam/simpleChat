@@ -16,5 +16,5 @@ repos:
       files: ^terraform/
     - id: terraform_tfsec
       files: ^terraform/
-    - id: checkov
-      files: ^terraform/
+    # - id: checkov
+    #   files: ^terraform/
