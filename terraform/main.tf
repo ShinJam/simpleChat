@@ -65,6 +65,12 @@ module "vpc" {
 ###################################
 # EC2
 ###################################
+locals {
+  ec2 = {
+    key_name = "kuve-ec2"
+
+  }
+}
 module "ec2" {
   source = "./modules/ec2"
 
@@ -72,7 +78,7 @@ module "ec2" {
 
   ami           = var.ami_id
   instance_type = var.instance_type
-  key_name      = "kuve-ec2"
+  key_name      = local.ec2.key_name
 
   sg_ids    = tolist([module.sg.ec2_security_group_id, ])
   subnet_id = module.vpc.public_subnets[0]
@@ -80,5 +86,15 @@ module "ec2" {
   tags = local.common_tags
 }
 
+# Bastion
+module "bastion_server" {
+  source = "./modules/bastion"
 
-
+  name            = "bastion"
+  ami             = var.ami_id
+  security_groups = tolist([module.sg.bastion_security_group_id, ])
+  subnets         = module.vpc.public_subnets
+  vpc_id          = module.vpc.vpc_id
+  tags            = local.common_tags
+  key_name        = local.ec2.key_name
+}
