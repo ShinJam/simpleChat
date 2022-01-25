@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  labels:
+    app: backend
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: nginx
+          ports:
+            - containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 20
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          env:
+          - name: db_user
+            valueFrom:
+              secretKeyRef:
+                name: rds-secret
+                key: DB_USER
+          - name: db_password
+            valueFrom:
+              secretKeyRef:
+                name: rds-secret
+                key: DB_PASSWORD
+          - name: db_url
+            valueFrom:
+              secretKeyRef:
+                name: rds-secret
+                key: DB_URL
+          - name: redis_url
+            valueFrom:
+              secretKeyRef:
+                name: redis-secret
+                key: REDIS_URL
+          - name: redis_password
+            valueFrom:
+              secretKeyRef:
+                name: redis-secret
+                key: REDIS_PASSWORD
+          resources:
+            requests:
+              cpu: 500m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
