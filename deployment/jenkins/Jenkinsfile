@@ -1,0 +1,30 @@
+pipeline {
+  agent any
+
+  parameters {
+    booleanParam(name : 'BUILD_DOCKER_IMAGE', defaultValue : true, description : 'BUILD_DOCKER_IMAGE')
+    booleanParam(name : 'RUN_TEST', defaultValue : true, description : 'RUN_TEST')
+    booleanParam(name : 'PUSH_DOCKER_IMAGE', defaultValue : true, description : 'PUSH_DOCKER_IMAGE')
+  }
+
+  environment {
+    REGION = "ap-northeast-2"
+  }
+
+  stages {
+    stage('============ Build Docker Image ============') {
+        when { expression { return params.BUILD_DOCKER_IMAGE } }
+        steps {
+            dir("${env.WORKSPACE}") {
+               sh 'ls -al'
+//                 sh 'docker build -t ${ECR_DOCKER_IMAGE}:${ECR_DOCKER_TAG} .'
+            }
+        }
+        post {
+            always {
+                echo "Docker build success!"
+            }
+        }
+    }
+  }
+}
