@@ -6,7 +6,7 @@ module "ec2_sg" {
   name            = "ec2-sg"
   description     = "Security group for web-server with HTTP ports open within VPC"
   vpc_id          = var.vpc_id
-  use_name_prefix = "false"
+#  use_name_prefix = "false"
 
   ingress_cidr_blocks = ["0.0.0.0/0"]
   ingress_rules       = ["https-443-tcp", "http-80-tcp", "ssh-tcp"]
