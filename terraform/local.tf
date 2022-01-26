@@ -50,7 +50,7 @@ locals {
       {
         name_prefix      = "tg-"
         backend_protocol = "HTTP"
-        backend_port     = 8080
+        backend_port     = 8080 # aws_lb_target_group
         target_type      = "instance"
 
         health_check = {
@@ -60,7 +60,7 @@ locals {
         targets = {
           jenkins = {
             target_id = module.jenkins.id
-            port      = 8080
+            port      = 8080 # aws_lb_target_group_attachment
           }
         }
         tags = local.common_tags
