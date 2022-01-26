@@ -5,12 +5,15 @@ module "ec2_instance" {
 
   name = var.name
 
-  ami                    = var.ami
-  instance_type          = var.instance_type
-  key_name               = var.key_name
-  monitoring             = true
-  vpc_security_group_ids = var.sg_ids
-  subnet_id              = var.subnet_id
+  ami                         = var.ami
+  instance_type               = var.instance_type
+  key_name                    = var.key_name
+  monitoring                  = true
+  vpc_security_group_ids      = var.sg_ids
+  subnet_id                   = var.subnet_id
+  associate_public_ip_address = var.associate_public_ip_address
+
+  user_data = var.user_data
 
   tags = var.tags
 }
