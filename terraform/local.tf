@@ -67,6 +67,10 @@ locals {
         backend_port     = 8080
         target_type      = "instance"
 
+        health_check = {
+          path = "/login"
+        }
+
         targets = {
           jenkins = {
             target_id = module.jenkins.id
