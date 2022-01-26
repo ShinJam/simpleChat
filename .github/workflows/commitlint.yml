@@ -21,12 +21,3 @@ jobs:
         uses: ./.github/actions/slack-notify
         with:
           slack_incoming_url: ${{ secrets.SLACK_NOTIFY_GH_ACTIONS }}
-      -
-        name: trigger jenkins Job
-        shell: bash
-        run: |
-          WEBHOOK=${{ secrets.JENKINS_WEBHOOK_URL }}
-          TOKEN=${{ secrets.JENKINS_API_TOKEN }}
-
-          curl -X POST -u admin:${TOKEN} "${WEBHOOK}job/tmp1/buildWithParameters?BUILD_DOCKER_IMAGE=true&RUN_TEST=true&PUSH_DOCKER_IMAGE=true"
-
