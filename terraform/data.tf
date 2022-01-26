@@ -7,6 +7,7 @@ data "template_file" "install_jenkins" {
 }
 
 data "cloudinit_config" "init_jenkins" {
+  # https://stackoverflow.com/questions/62067211/how-to-pass-multiple-template-files-to-user-data-variable-in-terraform
   gzip          = false
   base64_encode = false
 
