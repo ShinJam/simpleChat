@@ -1,3 +1,7 @@
-output "this_bastion_public_eip" {
-  value = aws_eip.bastion.public_ip
+output "public_eip" {
+  value = module.bastion.public_ip
+}
+
+output "instance_id" {
+  value = module.bastion.instance_id
 }
