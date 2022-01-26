@@ -17,17 +17,6 @@ terraform {
   }
 }
 
-# https://www.terraform.io/docs/language/values/locals.html
-locals {
-  name = "kuve"
-  # Name, TerraformPath, VPC, Creator 추가 필요
-  common_tags = {
-    TerraformManaged : true,
-    Environment : var.environment
-    Project : "kuve"
-  }
-}
-
 
 ####################################
 # Provider
@@ -63,15 +52,29 @@ module "vpc" {
 }
 
 ###################################
+# ALB
+###################################
+module "alb" {
+  source = "./modules/alb"
+
+  name = format("%s-alb", local.name)
+
+  vpc_id                  = module.vpc.vpc_id
+  security_groups         = tolist([module.sg.ec2_security_group_id, ])
+  subnets                 = module.vpc.public_subnets
+  http_tcp_listeners      = local.alb.http_tcp_listeners
+  http_tcp_listener_rules = local.alb.http_tcp_listener_rules
+  target_groups           = local.alb.target_groups
+
+  tags = local.common_tags
+}
+
+###################################
 # EC2
 ###################################
-locals {
-  ec2 = {
-    key_name = "kuve-ec2"
 
-  }
-}
-module "ec2" {
+# API-Server
+module "api-server" {
   source = "./modules/ec2"
 
   name = "api-server"
@@ -81,7 +84,26 @@ module "ec2" {
   key_name      = local.ec2.key_name
 
   sg_ids    = tolist([module.sg.ec2_security_group_id, ])
-  subnet_id = module.vpc.public_subnets[0]
+  subnet_id = element(module.vpc.public_subnets, 0)
+
+  tags = local.common_tags
+}
+
+# Jenkins
+module "jenkins" {
+  source = "./modules/ec2"
+
+  name = "jenkins-master"
+
+  ami           = var.ami_id
+  instance_type = var.instance_type
+  key_name      = local.ec2.key_name
+
+  sg_ids                      = tolist([module.sg.ec2_jenkins_security_group_id, module.vpc.default_sg_id])
+  subnet_id                   = element(module.vpc.private_subnets, 0)
+  associate_public_ip_address = false
+
+  user_data = data.cloudinit_config.init_jenkins.rendered
 
   tags = local.common_tags
 }
@@ -90,11 +112,11 @@ module "ec2" {
 module "bastion_server" {
   source = "./modules/bastion"
 
-  name            = "bastion"
-  ami             = var.ami_id
-  security_groups = tolist([module.sg.bastion_security_group_id, ])
-  subnets         = module.vpc.public_subnets
-  vpc_id          = module.vpc.vpc_id
-  tags            = local.common_tags
-  key_name        = local.ec2.key_name
+  name = "bastion"
+  ami  = var.ami_id
+  #  security_groups = tolist([module.sg.bastion_security_group_id, ])
+  subnets  = module.vpc.public_subnets
+  vpc_id   = module.vpc.vpc_id
+  tags     = local.common_tags
+  key_name = local.ec2.key_name
 }

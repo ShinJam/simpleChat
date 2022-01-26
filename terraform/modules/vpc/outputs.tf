@@ -37,3 +37,8 @@ output "azs" {
   description = "A list of availability zones spefified as argument to this module"
   value       = module.vpc.azs
 }
+
+output "default_sg_id" {
+  description = "The ID of the security group created by default on VPC creation"
+  value       = module.vpc.default_security_group_id
+}
