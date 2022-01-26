@@ -21,3 +21,11 @@ jobs:
         uses: ./.github/actions/slack-notify
         with:
           slack_incoming_url: ${{ secrets.SLACK_NOTIFY_GH_ACTIONS }}
+      -
+        name: trigger jenkins Job
+        uses: appleboy/jenkins-action@master
+        with:
+          url: ${{ secrets.JENKINS_WEBHOOK_URL }}
+          user: "admin"
+          token: ${{ secrets.JENKINS_API_TOKEN }}
+          job: tmp1
