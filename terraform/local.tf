@@ -36,21 +36,7 @@ locals {
     ]
     http_tcp_listener_rules = [
       {
-        http_listener_index = 0
-        actions = [{
-          type        = "redirect"
-          status_code = "HTTP_302"
-          host        = "www.youtube.com"
-          path        = "/watch"
-          query       = "v=dQw4w9WgXcQ"
-          protocol    = "HTTPS"
-        }]
-        conditions = [{
-          path_patterns = ["/*"]
-        }]
-      },
-      {
-        http_listener_index = 1
+        http_tcp_listener_index = 1
         actions = [{
           type               = "forward"
           target_group_index = 0
