@@ -1,9 +1,9 @@
 data "template_file" "userdata" {
-  template = file("templates/userdata.sh")
+  template = file("templates/jenkins/userdata.sh")
 }
 
 data "template_file" "install_jenkins" {
-  template = file("templates/install_jenkins.sh")
+  template = file("templates/jenkins/install_package.sh")
 }
 
 data "cloudinit_config" "init_jenkins" {
