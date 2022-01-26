@@ -23,9 +23,10 @@ jobs:
           slack_incoming_url: ${{ secrets.SLACK_NOTIFY_GH_ACTIONS }}
       -
         name: trigger jenkins Job
-        uses: appleboy/jenkins-action@master
-        with:
-          url: ${{ secrets.JENKINS_WEBHOOK_URL }}
-          user: "admin"
-          token: ${{ secrets.JENKINS_API_TOKEN }}
-          job: tmp1
+        shell: bash
+        run: |
+          WEBHOOK=${{ secrets.JENKINS_WEBHOOK_URL }}
+          TOKEN=${{ secrets.JENKINS_API_TOKEN }}
+
+          curl -X POST -u admin:${TOKEN} "${WEBHOOK}job/tmp1/buildWithParameters?BUILD_DOCKER_IMAGE=true&RUN_TEST=true&PUSH_DOCKER_IMAGE=true"
+
