@@ -33,4 +33,8 @@ variable "public_subnets" {
 #   default     = []
 # }
 
-variable "tags" {}
+variable "tags" {
+  description = "A mapping of tags to assign to security group"
+  type        = map(string)
+}
+

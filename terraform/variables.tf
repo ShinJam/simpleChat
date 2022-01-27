@@ -7,6 +7,9 @@ variable "environment" {
   type = string
 }
 
+#variable "account" {
+#  type = string
+#}
 
 # vpc
 variable "cidr" {

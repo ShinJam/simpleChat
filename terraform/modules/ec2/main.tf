@@ -12,6 +12,7 @@ module "ec2_instance" {
   vpc_security_group_ids      = var.sg_ids
   subnet_id                   = var.subnet_id
   associate_public_ip_address = var.associate_public_ip_address
+  iam_instance_profile        = var.iam_instance_profile
 
   user_data = var.user_data
 

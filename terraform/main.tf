@@ -69,6 +69,20 @@ module "alb" {
   tags = local.common_tags
 }
 
+######################################
+# KMS: create kms for encrypting/decrypting SSM parameter stores
+######################################
+module "kms" {
+  source = "./modules/kms"
+
+  name = local.name
+
+  jenkins_role_arn = aws_iam_role.jenkins_role.arn
+
+  tags       = local.common_tags
+  depends_on = [aws_iam_role.jenkins_role]
+}
+
 ###################################
 # EC2
 ###################################
@@ -102,6 +116,7 @@ module "jenkins" {
   sg_ids                      = tolist([module.sg.ec2_jenkins_security_group_id, module.vpc.default_sg_id])
   subnet_id                   = element(module.vpc.private_subnets, 0)
   associate_public_ip_address = false
+  iam_instance_profile        = aws_iam_instance_profile.jenkins.name
 
   user_data = data.cloudinit_config.init_jenkins.rendered
 

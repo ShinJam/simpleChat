@@ -23,4 +23,37 @@ data "cloudinit_config" "init_jenkins" {
     content      = data.template_file.install_jenkins.rendered
   }
 }
+###################################
+# IAM Policies
+###################################
 
+data "aws_iam_policy_document" "default" {
+  statement {
+    sid = ""
+
+    actions = [
+      "sts:AssumeRole",
+    ]
+
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
+    }
+
+    effect = "Allow"
+  }
+}
+
+data "aws_iam_policy_document" "get_params_by_path" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "ssm:GetParametersByPath"
+    ]
+
+    resources = [
+      "arn:aws:ssm:ap-northeast-2:*"
+    ]
+  }
+}
