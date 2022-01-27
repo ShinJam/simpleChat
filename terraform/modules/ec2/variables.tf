@@ -52,3 +52,9 @@ variable "private_ip" {
   type        = string
   default     = null
 }
+
+variable "iam_instance_profile" {
+  description = "IAM Instance Profile to launch the instance with. Specified as the name of the Instance Profile"
+  type        = string
+  default     = null
+}
