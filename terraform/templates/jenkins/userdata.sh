@@ -1,7 +1,7 @@
 #!/bin/bash
 
 sudo yum update
-sudo yum install -y docker git
+sudo yum install -y docker git jq
 
 ## docker
 #sudo usermod -aG docker ec2-user
