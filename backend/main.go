@@ -10,6 +10,7 @@ import (
 	"github.com/shinjam/simpleChat/pkg/routes"
 	"github.com/shinjam/simpleChat/pkg/utils"
 
+	_ "github.com/joho/godotenv/autoload" // load .env file automatically
 	_ "github.com/shinjam/simpleChat/docs"
 )
 
@@ -25,6 +26,7 @@ import (
 // @name Authorization
 // @BasePath /api
 func main() {
+
 	// Define Fiber config.
 	config := configs.FiberConfig()
 
