@@ -10,8 +10,9 @@ aws ssm get-parameters-by-path \
     --recursive
 `
 
+[ -e .env ] && rm .env
 for row in $(echo ${PARAMETERS} | jq -c '.Parameters' | jq -c '.[]'); do
-        KEY=$(basename $( echo ${row} | jq -c '.Name' | tr -d '"'))
-        VALUE=$(echo ${row} | jq -c '.Value' | tr -d '"')
-        export ${KEY}=${VALUE}
+        KEY=$(basename $( jq -c '.Name' <<< ${row} | tr -d '"'))
+        VALUE=$(jq -c '.Value' <<< ${row} | tr -d '"')
+        echo ${KEY}=${VALUE} >> .env
 done

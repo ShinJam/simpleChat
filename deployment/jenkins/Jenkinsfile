@@ -2,29 +2,61 @@ pipeline {
   agent any
 
   parameters {
-    booleanParam(name : 'BUILD_DOCKER_IMAGE', defaultValue : true, description : 'BUILD_DOCKER_IMAGE')
-    booleanParam(name : 'RUN_TEST', defaultValue : true, description : 'RUN_TEST')
-    booleanParam(name : 'PUSH_DOCKER_IMAGE', defaultValue : true, description : 'PUSH_DOCKER_IMAGE')
-  }
+    booleanParam(name: 'BUILD_DOCKER_IMAGE', defaultValue: true, description: 'BUILD_DOCKER_IMAGE')
+    booleanParam(name: 'PUSH_DOCKER_IMAGE', defaultValue: true, description: 'PUSH_DOCKER_IMAGE')
 
+    // CI
+    string(name: 'AWS_ACCOUNT_ID', defaultValue: '559121217486', description: 'AWS_ACCOUNT_ID')
+  }
   environment {
-    REGION = "ap-northeast-2"
+    REGION = 'ap-northeast-2'
+    ECR_REPOSITORY_URI = "${params.AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-2.amazonaws.com"
   }
 
   stages {
     stage('============ Build Docker Image ============') {
-        when { expression { return params.BUILD_DOCKER_IMAGE } }
-        steps {
-            dir("${env.WORKSPACE}") {
-               sh 'ls -al'
-//                 sh 'docker build -t ${ECR_DOCKER_IMAGE}:${ECR_DOCKER_TAG} .'
-            }
+      when {
+        expression {
+          return params.BUILD_DOCKER_IMAGE
         }
-        post {
-            always {
-                echo "Docker build success!"
-            }
+      }
+      steps {
+        dir("${env.WORKSPACE}/backend") {
+          echo "${ECR_REPOSITORY_URI}"
+          sh 'make env'
+          sh 'ECR_REPOSITORY_URI=${ECR_REPOSITORY_URI} docker-compose -f docker/staging.yml build'
         }
+      }
+    }
+    stage('============ Push Docker Image ============') {
+      when {
+        expression {
+          return params.PUSH_DOCKER_IMAGE
+        }
+      }
+      steps {
+        dir("${env.WORKSPACE}/backend") {
+          sh 'aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ECR_REPOSITORY_URI}'
+          sh 'ECR_REPOSITORY_URI=${ECR_REPOSITORY_URI} docker-compose -f docker/staging.yml push'
+        }
+      }
     }
   }
 }
+
+// post {
+//   success {
+//     slackSend(
+//       channel: '#jenkins',
+//       color: 'good',
+//       message: "✅ Job:${env.JOB_NAME}, Build num:#${env.BUILD_NUMBER} (<${env.RUN_DISPLAY_URL}|open job detail>)"
+//     )
+//   }
+//   failure {
+//     slackSend(
+//       channel: '#jenkins',
+//       color: 'danger',
+//       message: "⛔ Job:${env.JOB_NAME}, Build num:#${env.BUILD_NUMBER} @channel (<${env.RUN_DISPLAY_URL}|open job detail>)"
+//     )
+//   }
+// }
