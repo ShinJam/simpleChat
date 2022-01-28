@@ -2,6 +2,23 @@
 
 # Notes
 
+## go-json memory issue
+
+jenkins 인스턴스에서 go build가 안되는 문제 발견
+```shell
+go build github.com/goccy/go-json: /usr/local/go/pkg/tool/linux_amd64/compile: signal: killed
+```
+찾아보니 go-json이 빠른대신에 메모리를 좀 차지 한다고 한다.
+t2.micro에서 t2.small로 변경하여 해결한다.
+
+<details>
+    <summary>Reference</summary>
+
+- [Can't build package: "signal: killed"](https://github.com/blevesearch/segment/issues/5)
+
+</details>
+
+
 ## Jenkins ALB Health check
 
 ```text

@@ -39,6 +39,9 @@ variable "private_subnets" {
 variable "ami_id" {
   type = string
 }
-variable "instance_type" {
+variable "jenkins_instance_type" {
+  type = string
+}
+variable "server_instance_type" {
   type = string
 }
