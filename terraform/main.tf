@@ -135,3 +135,10 @@ module "bastion_server" {
   tags     = local.common_tags
   key_name = local.ec2.key_name
 }
+
+###################################
+# ECR
+###################################
+resource "aws_ecr_repository" "fiber" {
+  name = "fiber"
+}
