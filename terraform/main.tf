@@ -94,7 +94,7 @@ module "api-server" {
   name = "api-server"
 
   ami           = var.ami_id
-  instance_type = var.instance_type
+  instance_type = var.server_instance_type
   key_name      = local.ec2.key_name
 
   sg_ids    = tolist([module.sg.ec2_security_group_id, ])
@@ -110,7 +110,7 @@ module "jenkins" {
   name = "jenkins-master"
 
   ami           = var.ami_id
-  instance_type = var.instance_type
+  instance_type = var.jenkins_instance_type
   key_name      = local.ec2.key_name
 
   sg_ids                      = tolist([module.sg.ec2_jenkins_security_group_id, module.vpc.default_sg_id])
