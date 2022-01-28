@@ -49,12 +49,11 @@ data "aws_iam_policy_document" "get_params_by_path" {
     effect = "Allow"
 
     actions = [
-      "ssm:GetParametersByPath",
-      "ecr:GetAuthorizationToken" # only allow resources all("*")
+      "ssm:GetParametersByPath"
     ]
 
     resources = [
-      "*",
+      "*", # only ecr:GetAuthorizationToken allow resources all("*")
 #      "arn:aws:ssm:ap-northeast-2:*",
     ]
   }
