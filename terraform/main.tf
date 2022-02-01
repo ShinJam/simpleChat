@@ -98,7 +98,7 @@ module "api-server" {
   key_name      = local.ec2.key_name
 
   sg_ids    = tolist([module.sg.ec2_security_group_id, ])
-  subnet_id = element(module.vpc.public_subnets, 0)
+  subnet_id = element(module.vpc.private_subnets, 0)
 
   tags = local.common_tags
 }
