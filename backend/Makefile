@@ -20,8 +20,9 @@ security:
 lint:
 	golangci-lint run ./...
 
-build:
+build: env
 	CGO_ENABLED=0 go build -ldflags="-w -s" -o $(BUILD_DIR)/$(APP_NAME) main.go
+	rm .env
 
 test: clean critic security lint
 	go test -v -timeout 30s -coverprofile=cover.out -cover ./...
@@ -56,3 +57,7 @@ migrate.force:
 
 swag:
 	swag init
+
+env:
+	chmod +x exportEnvs.sh
+	./exportEnvs.sh

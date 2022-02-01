@@ -1,11 +1,11 @@
-name: Lint Commit Messages
+name: CommitLint
 
 on:
   push:
-    branches: [ "develop" ]
+    branches: [ "main" ]
 
   pull_request:
-    branches: [ "develop" ]
+#    branches: [ "develop" ]
 
 jobs:
   commitlint:
@@ -15,8 +15,8 @@ jobs:
         with:
           fetch-depth: 0
       - uses: wagoid/commitlint-github-action@v4
-
-      - name: Send slack when failed
+      -
+        name: Send slack when failed
         if: ${{ failure() }}
         uses: ./.github/actions/slack-notify
         with:

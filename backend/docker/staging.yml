@@ -1,0 +1,8 @@
+version: '3.8'
+
+services:
+  fiber: &fiber
+    build:
+      context: ../.
+      dockerfile: docker/Dockerfile.fiber
+    image: "${ECR_REPOSITORY_URI}/fiber:latest"
