@@ -77,10 +77,10 @@ module "kms" {
 
   name = local.name
 
-  jenkins_role_arn = aws_iam_role.jenkins_role.arn
+  jenkins_role_arn = aws_iam_role.default_role.arn
 
   tags       = local.common_tags
-  depends_on = [aws_iam_role.jenkins_role]
+  depends_on = [aws_iam_role.default_role]
 }
 
 ###################################

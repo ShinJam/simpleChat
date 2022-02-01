@@ -6,7 +6,8 @@ data "template_file" "jenkins_userdata" {
   template = file("templates/userdata/jenkins_ec2.sh")
 }
 
-data "cloudinit_config" "init_jenkins" {
+
+data "template_cloudinit_config" "init_jenkins" {
   # https://stackoverflow.com/questions/62067211/how-to-pass-multiple-template-files-to-user-data-variable-in-terraform
   # TODO: part 2개 이상 사용시 에러
   # Permission denied (publickey,gssapi-keyex,gssapi-with-mic).
@@ -60,12 +61,14 @@ data "aws_iam_policy_document" "default" {
   }
 }
 
-data "aws_iam_policy_document" "get_params_by_path" {
+data "aws_iam_policy_document" "ssm" {
   statement {
     effect = "Allow"
 
     actions = [
-      "ssm:GetParametersByPath"
+      "ssm:GetParametersByPath",
+      "ssm:StartSession",
+      "ssm:TerminateSession"
     ]
 
     resources = [
