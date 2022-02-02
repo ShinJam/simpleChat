@@ -97,8 +97,8 @@ module "api-server" {
   instance_type = var.server_instance_type
   key_name      = local.ec2.key_name
 
-  sg_ids    = tolist([module.sg.ec2_security_group_id, ])
-  subnet_id = element(module.vpc.private_subnets, 0)
+  sg_ids                      = tolist([module.sg.ec2_security_group_id, ])
+  subnet_id                   = element(module.vpc.private_subnets, 0)
   associate_public_ip_address = false
   iam_instance_profile        = aws_iam_instance_profile.api-server.name
 

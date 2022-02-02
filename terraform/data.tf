@@ -71,7 +71,7 @@ data "aws_iam_policy_document" "ssm" {
 
     resources = [
       "*", # only ecr:GetAuthorizationToken allow resources all("*")
-#      "arn:aws:ssm:ap-northeast-2:*",
+      #      "arn:aws:ssm:ap-northeast-2:*",
     ]
   }
 }
