@@ -36,7 +36,7 @@ locals {
     ]
     http_tcp_listener_rules = [
       {
-        http_tcp_listener_index = 1
+        http_tcp_listener_index = 0
         actions = [{
           type               = "forward"
           target_group_index = 0
@@ -44,9 +44,37 @@ locals {
         conditions = [{
           path_patterns = ["/*"]
         }]
+      },
+      {
+        http_tcp_listener_index = 1
+        actions = [{
+          type               = "forward"
+          target_group_index = 1
+        }]
+        conditions = [{
+          path_patterns = ["/*"]
+        }]
       }
     ]
     target_groups = [
+      {
+        name_prefix      = "tg-"
+        backend_protocol = "HTTP"
+        backend_port     = 80 # aws_lb_target_group
+        target_type      = "instance"
+
+        health_check = {
+          path = "/"
+        }
+
+        targets = {
+          jenkins = {
+            target_id = module.api-server.id
+            port      = 80 # aws_lb_target_group_attachment
+          }
+        }
+        tags = local.common_tags
+      },
       {
         name_prefix      = "tg-"
         backend_protocol = "HTTP"
@@ -64,7 +92,7 @@ locals {
           }
         }
         tags = local.common_tags
-      }
+      },
     ]
   }
 }
