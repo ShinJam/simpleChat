@@ -100,7 +100,7 @@ module "api-server" {
   sg_ids    = tolist([module.sg.ec2_security_group_id, ])
   subnet_id = element(module.vpc.private_subnets, 0)
 
-  user_data = data.cloudinit_config.init_api_server.rendered
+  user_data = data.template_file.api_userdata.rendered
 
   tags = local.common_tags
 }
@@ -120,7 +120,7 @@ module "jenkins" {
   associate_public_ip_address = false
   iam_instance_profile        = aws_iam_instance_profile.jenkins.name
 
-#  user_data = data.cloudinit_config.init_jenkins.rendered
+  user_data = data.template_file.jenkins_userdata.rendered
 
   tags = local.common_tags
 }
