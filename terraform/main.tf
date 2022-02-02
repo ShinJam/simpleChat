@@ -77,10 +77,10 @@ module "kms" {
 
   name = local.name
 
-  jenkins_role_arn = aws_iam_role.jenkins_role.arn
+  jenkins_role_arn = aws_iam_role.default_role.arn
 
   tags       = local.common_tags
-  depends_on = [aws_iam_role.jenkins_role]
+  depends_on = [aws_iam_role.default_role]
 }
 
 ###################################
@@ -97,8 +97,12 @@ module "api-server" {
   instance_type = var.server_instance_type
   key_name      = local.ec2.key_name
 
-  sg_ids    = tolist([module.sg.ec2_security_group_id, ])
-  subnet_id = element(module.vpc.private_subnets, 0)
+  sg_ids                      = tolist([module.sg.ec2_security_group_id, ])
+  subnet_id                   = element(module.vpc.private_subnets, 0)
+  associate_public_ip_address = false
+  iam_instance_profile        = aws_iam_instance_profile.api-server.name
+
+  user_data = data.template_file.api_userdata.rendered
 
   tags = local.common_tags
 }
@@ -118,10 +122,11 @@ module "jenkins" {
   associate_public_ip_address = false
   iam_instance_profile        = aws_iam_instance_profile.jenkins.name
 
-  user_data = data.cloudinit_config.init_jenkins.rendered
+  user_data = data.template_file.jenkins_userdata.rendered
 
   tags = local.common_tags
 }
+
 
 # Bastion
 module "bastion_server" {

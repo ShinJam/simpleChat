@@ -19,6 +19,3 @@ sudo systemctl status jenkins;
 sudo systemctl enable docker;
 sudo systemctl start docker;
 sudo usermod -aG docker jenkins;
-
-# docker 실행을 위한 jenkins 추가
-sudo usermod -aG docker jenkins

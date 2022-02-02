@@ -2,7 +2,9 @@ version: '3.8'
 
 services:
   fiber: &fiber
-    build:
-      context: ../.
-      dockerfile: docker/Dockerfile.fiber
-    image: "${ECR_REPOSITORY_URI}/fiber:latest"
+    container_name: fiber
+    image: "${IMAGE}:${TAG}"
+    env_file:
+      - .env
+    ports:
+      - 80:5000
