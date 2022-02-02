@@ -19,7 +19,7 @@ resource "aws_iam_role_policy" "main" {
 }
 
 
-resource "aws_iam_role_policy_attachment" "jenkins_ecr_policy" {
+resource "aws_iam_role_policy_attachment" "ecr_policy" {
   role       = aws_iam_role.default_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser"
 }
