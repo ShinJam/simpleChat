@@ -45,3 +45,33 @@ variable "jenkins_instance_type" {
 variable "server_instance_type" {
   type = string
 }
+
+# RDS
+variable "engine_version" {
+  type = string
+}
+variable "instance_class" {
+  type = string
+}
+variable "apply_immediately" {
+  type = bool
+}
+variable "database_name" {
+  type = string
+}
+variable "username" {
+  type = string
+}
+
+variable "password" {
+  type = string
+}
+variable "vpc_security_group_ids" {
+  type = list(string)
+}
+variable "subnet_ids" {
+  type = list(string)
+}
+variable "deletion_protection" {
+  type = bool
+}

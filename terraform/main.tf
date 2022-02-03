@@ -132,14 +132,15 @@ module "jenkins" {
 module "bastion_server" {
   source = "./modules/bastion"
 
-  name = "bastion"
-  ami  = var.ami_id
+  name            = "bastion"
+  ami             = var.ami_id
   security_groups = tolist([module.sg.bastion_security_group_id, ])
-  subnets  = module.vpc.public_subnets
-  vpc_id   = module.vpc.vpc_id
-  tags     = local.common_tags
-  key_name = local.ec2.key_name
+  subnets         = module.vpc.public_subnets
+  vpc_id          = module.vpc.vpc_id
+  tags            = local.common_tags
+  key_name        = local.ec2.key_name
 }
+
 
 ###################################
 # ECR
