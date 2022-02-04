@@ -10,8 +10,11 @@ output "bastion_security_group_id" {
   description = "The ID of the bastion security group"
   value       = module.bastion_sg.security_group_id
 }
-
 output "rds_security_group_id" {
   description = "The ID of the rds security group"
   value       = module.rds_sg.security_group_id
+}
+output "redis_security_group_id" {
+  description = "The ID of the rds security group"
+  value       = module.redis_sg.security_group_id
 }
