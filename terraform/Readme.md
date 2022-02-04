@@ -105,3 +105,16 @@ $ curl -w " - status code: %{http_code}" http://localhost:8080
 - [Getting Started with cloud-init](https://www.youtube.com/watch?v=exeuvgPxd-E)
 
 </details>
+
+### ssh tunneling
+
+```shell
+$ ssh -nNT -L {LCOAL_PORT}:{RDS_ENDPOINT}:{REMOTE_PORT} {HOSTNAME}
+```
+
+<details>
+    <summary>Reference</summary>
+
+- [SSH setup and tunneling via Bastion host](https://dev.to/aws-builders/ssh-setup-and-tunneling-via-bastion-host-3kcc)
+
+</details>
