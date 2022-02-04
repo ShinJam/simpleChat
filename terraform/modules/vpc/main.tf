@@ -9,7 +9,7 @@ module "vpc" {
   azs             = var.azs
   public_subnets  = var.public_subnets
   private_subnets = var.private_subnets
-  # database_subnets = var.database_subnets
+  database_subnets = var.database_subnets
 
   # rds 모듈로 rds 생성시 subnet_group가 이미 존재한다는 에러 발생
   # create_database_subnet_group = false

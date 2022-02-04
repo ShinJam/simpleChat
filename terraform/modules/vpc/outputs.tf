@@ -21,10 +21,10 @@ output "public_subnets" {
   value       = module.vpc.public_subnets
 }
 
-# output "database_subnets" {
-#   description = "List of IDs of database subnets"
-#   value       = module.vpc.database_subnets
-# }
+ output "database_subnets" {
+   description = "List of IDs of database subnets"
+   value       = module.vpc.database_subnets
+ }
 
 # NAT gateways
 output "nat_public_ips" {
