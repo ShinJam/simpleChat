@@ -64,8 +64,8 @@ terraform은 sg가 아직 instance와 관련이 있을 때 삭제 시키지 않�
 </details>
 
 
-## Tips
-### AWS resource 전체 삭제
+# Tips
+## AWS resource 전체 삭제
 - install [cloud-nuke](https://github.com/gruntwork-io/cloud-nuke)
 ```shell
 $ brew install clude-nuke
@@ -75,7 +75,7 @@ $ brew install clude-nuke
 $ cloud-nuke aws --region ap-northeast-2 --exclude-resource-type iam
 ```
 
-### curl status code 확인
+## curl status code 확인
 
 ```shell
 $ curl -w " - status code: %{http_code}" http://localhost:8080
@@ -88,7 +88,7 @@ $ curl -w " - status code: %{http_code}" http://localhost:8080
 
 </details>
 
-### instance 초기화
+## instance 초기화
 인스턴스 생성후 패키지 설정등 초기화 방법에는 세가지 방법이 있다.
 1. Ansible
 2. run script
@@ -116,5 +116,31 @@ $ ssh -nNT -L {LCOAL_PORT}:{RDS_ENDPOINT}:{REMOTE_PORT} {HOSTNAME}
     <summary>Reference</summary>
 
 - [SSH setup and tunneling via Bastion host](https://dev.to/aws-builders/ssh-setup-and-tunneling-via-bastion-host-3kcc)
+
+</details>
+
+### api 요청만 접근 가능하게 하는 SG
+sg의 Source를 다른 sg를 갖는다면 그 sg을갖고 있는 요청만 받을 수 있다.
+
+<details>
+    <summary>Reference</summary>
+
+- [(AWS) Security Group에서 다른 Security Group을 참조하는 경우](https://perfectacle.github.io/2018/08/30/aws-security-group-reference-another-security-group/)
+- [Terraform으로 AWS Security Group 설정하기](https://rampart81.github.io/post/security_group_terraform/)
+
+</details>
+
+### Permission denied (publickey).
+ssh 접근시 denied 됐을 때 여러가지 이유가 있을 수 있지만 authorized_keys가 삭제돼 문제 발생.
+삭제된 이유로는 cloudinit 사용하면서 발생
+- 해결 방법1: 임으로 authorized_keys 추가
+
+<details>
+    <summary>Reference</summary>
+
+- [[AWS] EC2 접속용 SSH 키페어 분실 또는 손상 시 키 재생성 방법](http://blog.freezner.com/archives/2303)
+- [AWS EC2 authorized_key 삭제 문제 로 인한 접속 불가 해결](https://knphouse.tistory.com/102)
+- [EC2 keypair works in one instance but fails on other - Permission denied (publickey)](https://stackoverflow.com/questions/23068591/ec2-keypair-works-in-one-instance-but-fails-on-other-permission-denied-public)
+- [접속이 잘 되던 KeyPair가 갑자기 Permission Denied 된다](https://nara.dev/til/aws/sudden-accessdenied.html#%E1%84%8B%E1%85%B3%E1%86%BC%E1%84%80%E1%85%B3%E1%86%B8-%E1%84%8C%E1%85%A9%E1%84%8E%E1%85%B5-immediate-action)
 
 </details>
