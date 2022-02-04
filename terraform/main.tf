@@ -172,3 +172,23 @@ module "db" {
 resource "aws_ecr_repository" "fiber" {
   name = "fiber"
 }
+
+###################################
+# elasticache - redis
+###################################
+module "redis" {
+  source = "./modules/elasticache"
+
+  availability_zones            = var.azs
+  engine_version                = var.redis_engine_version
+  family                        = var.redis_family
+  instance_type                 = var.redis_instance_type
+  associated_security_group_ids = tolist([module.sg.redis_security_group_id, ])
+  subnets                       = module.vpc.private_subnets
+  vpc_id                        = module.vpc.vpc_id
+
+  namespace = local.name
+  name      = "message-pub/sub"
+  stage     = local.common_tags.Environment
+  tags      = local.common_tags
+}

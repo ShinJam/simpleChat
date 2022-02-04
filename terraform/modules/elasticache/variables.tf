@@ -2,15 +2,7 @@ variable "availability_zones" {
   type        = list(string)
   description = "Availability zone IDs"
 }
-variable "zone_id" {
-  type        = any
-  default     = []
-  description = <<-EOT
-    Route53 DNS Zone ID as list of string (0 or 1 items). If empty, no custom DNS name will be published.
-    If the list contains a single Zone ID, a custom DNS name will be pulished in that zone.
-    Can also be a plain string, but that use is DEPRECATED because of Terraform issues.
-    EOT
-}
+
 variable "vpc_id" {
   description = "ID of the VPC where to create security group"
   type        = string
@@ -57,11 +49,30 @@ variable "transit_encryption_enabled" {
     If this is enabled, use the [following guide](https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/in-transit-encryption.html#connect-tls) to access redis.
     EOT
 }
-variable "security_group_name" {
+variable "associated_security_group_ids" {
   type        = list(string)
   description = <<-EOT
-    The name to assign to the created security group. Must be unique within the VPC.
-    If not provided, will be derived from the `null-label.context` passed in.
-    If `create_before_destroy` is true, will be used as a name prefix.
+    A list of IDs of Security Groups to associate the created resource with, in addition to the created security group.
+    These security groups will not be modified and, if `create_security_group` is `false`, must provide all the required access.
     EOT
+}
+variable "tags" {
+  description = "A mapping of tags to assign to security group"
+  type        = map(string)
+}
+variable "namespace" {
+  type        = string
+  description = "ID element. Usually an abbreviation of your organization name, e.g. 'eg' or 'cp', to help ensure generated IDs are globally unique"
+}
+variable "name" {
+  type        = string
+  description = <<-EOT
+    ID element. Usually the component or solution name, e.g. 'app' or 'jenkins'.
+    This is the only ID element not also included as a `tag`.
+    The "name" tag is set to the full `id` string. There is no tag with the value of the `name` input.
+    EOT
+}
+variable "stage" {
+  type        = string
+  description = "ID element. Usually used to indicate role, e.g. 'prod', 'staging', 'source', 'build', 'test', 'deploy', 'release'"
 }

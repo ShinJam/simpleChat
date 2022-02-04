@@ -4,7 +4,6 @@ module "redis" {
   version = "0.42.0"
 
   availability_zones               = var.availability_zones
-  zone_id                          = [var.zone_id]
   vpc_id                           = var.vpc_id
   allowed_security_groups          = var.allowed_security_group_ids
   subnets                          = var.subnets
@@ -19,7 +18,14 @@ module "redis" {
 
   # Verify that we can safely change security groups (name changes forces new SG)
   security_group_create_before_destroy = true
-  security_group_name                  = var.security_group_name
+  create_security_group = false
+  associated_security_group_ids = var.associated_security_group_ids
 
   security_group_delete_timeout = "5m"
+
+  # https://github.com/cloudposse/terraform-aws-elasticache-redis/issues/16
+  namespace = var.namespace
+  name = var.name
+  stage = var.stage
+  tags = var.tags
 }

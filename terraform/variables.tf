@@ -69,3 +69,16 @@ variable "password" {
 variable "deletion_protection" {
   type = bool
 }
+# redis
+variable "redis_engine_version" {
+  type        = string
+  description = "Redis engine version"
+}
+variable "redis_family" {
+  type        = string
+  description = "Redis family"
+}
+variable "redis_instance_type" {
+  type        = string
+  description = "Elastic cache instance type"
+}
