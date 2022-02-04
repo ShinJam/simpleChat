@@ -44,9 +44,10 @@ module "vpc" {
   name = local.name
   cidr = var.cidr
 
-  azs             = var.azs
-  public_subnets  = var.public_subnets
-  private_subnets = var.private_subnets
+  azs              = var.azs
+  public_subnets   = var.public_subnets
+  private_subnets  = var.private_subnets
+  database_subnets = var.database_subnets
 
   tags = local.common_tags
 }
@@ -139,6 +140,29 @@ module "bastion_server" {
   vpc_id          = module.vpc.vpc_id
   tags            = local.common_tags
   key_name        = local.ec2.key_name
+}
+
+######################################
+# RDS Postgresql
+######################################
+module "db" {
+  source = "./modules/rds"
+
+  name = format("%s-db", local.name)
+
+  engine_version    = var.engine_version
+  instance_class    = var.instance_class
+  apply_immediately = var.apply_immediately
+
+  database_name = var.database_name
+  username      = var.username
+  password      = var.password
+
+  vpc_security_group_ids = tolist([module.sg.rds_security_group_id, ])
+  subnet_ids             = module.vpc.database_subnets
+  deletion_protection    = var.deletion_protection
+
+  tags = local.common_tags
 }
 
 

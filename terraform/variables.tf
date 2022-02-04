@@ -24,15 +24,15 @@ variable "azs" {
 }
 
 variable "public_subnets" {
-  description = "A list of public subnets inside the VPC"
-  type        = list(string)
-  default     = []
+  type = list(string)
 }
 
 variable "private_subnets" {
-  description = "A list of private subnets inside the VPC"
-  type        = list(string)
-  default     = []
+  type = list(string)
+}
+
+variable "database_subnets" {
+  type = list(string)
 }
 
 # EC2
@@ -65,12 +65,6 @@ variable "username" {
 
 variable "password" {
   type = string
-}
-variable "vpc_security_group_ids" {
-  type = list(string)
-}
-variable "subnet_ids" {
-  type = list(string)
 }
 variable "deletion_protection" {
   type = bool

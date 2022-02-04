@@ -27,11 +27,11 @@ variable "public_subnets" {
   default     = []
 }
 
-# variable "database_subnets" {
-#   description = "A list of database subnets inside the VPC"
-#   type        = list(string)
-#   default     = []
-# }
+ variable "database_subnets" {
+   description = "A list of database subnets inside the VPC"
+   type        = list(string)
+   default     = []
+ }
 
 variable "tags" {
   description = "A mapping of tags to assign to security group"
