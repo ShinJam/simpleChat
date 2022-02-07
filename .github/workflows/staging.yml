@@ -97,3 +97,4 @@ jobs:
           TOKEN=${{ secrets.JENKINS_API_TOKEN }}
 
           curl -X POST -u "admin:${TOKEN}" "${WEBHOOK}job/fiber/buildWithParameters?BUILD_DOCKER_IMAGE=true&RUN_TEST=true&PUSH_DOCKER_IMAGE=true"
+          curl -X POST -u "admin:${TOKEN}" "${WEBHOOK}job/vue/buildWithParameters?DEPLOY_WORKLOAD=true"
