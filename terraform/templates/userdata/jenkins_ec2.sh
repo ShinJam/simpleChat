@@ -5,8 +5,9 @@ sudo yum update -y
 sudo yum upgrade -y;
 sudo amazon-linux-extras install epel -y;
 
-# Install docker, jq
-sudo yum install -y docker git jq
+# Install docker, nodejs, jq
+curl -sL https://rpm.nodesource.com/setup_16.x | sudo -E bash
+sudo yum install -y docker nodejs jq
 
 # docker
 sudo usermod -aG docker ec2-user
