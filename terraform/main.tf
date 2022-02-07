@@ -192,3 +192,22 @@ module "redis" {
   stage     = local.common_tags.Environment
   tags      = local.common_tags
 }
+
+###################################
+# s3
+###################################
+
+# vue bucket
+module "vue_s3" {
+  source = "./modules/s3"
+
+  bucket_prefix = local.name
+  tags          = local.common_tags
+}
+
+resource "aws_s3_bucket_policy" "vue" {
+  bucket = module.vue_s3.s3_bucket_id
+  policy = module.vue_s3.vue_bucket_policy.json
+
+  depends_on = [module.vue_s3]
+}

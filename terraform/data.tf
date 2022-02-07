@@ -59,6 +59,7 @@ data "aws_iam_policy_document" "default" {
   }
 }
 
+# EC2 - Jenkins, api-server
 data "aws_iam_policy_document" "ssm" {
   statement {
     effect = "Allow"
@@ -75,3 +76,4 @@ data "aws_iam_policy_document" "ssm" {
     ]
   }
 }
+

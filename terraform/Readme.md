@@ -63,6 +63,29 @@ terraform은 sg가 아직 instance와 관련이 있을 때 삭제 시키지 않�
 
 </details>
 
+## install nodejs
+`ami-0b1d3b1941f23c7d5` 에서 몇가지 에러 발생
+16 버전을 설치하기 위해선 libuv 버전이 안맞았고 14 버전을 설치 하자니 deltarpm이 없다는 에러 발생
+1. `Error: Delta RPMs disabled because /usr/bin/applydeltarpm not installed.`
+2. `Requires: libuv >= 1:1.42.0`
+- 해결:
+  1. yum install deltarpm 패키지 설치 후 14 버전 설치
+  2. ami 변경
+
+` No more mirrors to try.` 에러 발생 원인으로는 여러가지 버전의 node를 다운 받아서 나는 오류
+- 해결:
+  - `sudo rm -fv /etc/yum.repos.d/nodesource*`
+  - `sudo yum clean all`
+
+
+<details>
+    <summary>Reference</summary>
+
+- [Fail to install nodejs 8 on CentOS 7](https://github.com/nodesource/distributions/issues/472)
+- [CentOS7 node.js 12.x 설치](https://zetawiki.com/wiki/CentOS7_node.js_12.x_%EC%84%A4%EC%B9%98)
+
+</details>
+
 
 # Tips
 ## AWS resource 전체 삭제
@@ -144,3 +167,5 @@ ssh 접근시 denied 됐을 때 여러가지 이유가 있을 수 있지만 auth
 - [접속이 잘 되던 KeyPair가 갑자기 Permission Denied 된다](https://nara.dev/til/aws/sudden-accessdenied.html#%E1%84%8B%E1%85%B3%E1%86%BC%E1%84%80%E1%85%B3%E1%86%B8-%E1%84%8C%E1%85%A9%E1%84%8E%E1%85%B5-immediate-action)
 
 </details>
+
+
