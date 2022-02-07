@@ -67,7 +67,8 @@ data "aws_iam_policy_document" "ssm" {
     actions = [
       "ssm:GetParametersByPath",
       "ssm:StartSession",
-      "ssm:TerminateSession"
+      "ssm:TerminateSession",
+      "s3:ListBucket",
     ]
 
     resources = [
