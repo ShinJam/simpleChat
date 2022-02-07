@@ -96,4 +96,4 @@ jobs:
           WEBHOOK=${{ secrets.JENKINS_WEBHOOK_URL }}
           TOKEN=${{ secrets.JENKINS_API_TOKEN }}
 
-          curl -X POST -u admin:${TOKEN} "${WEBHOOK}job/demo/buildWithParameters?BUILD_DOCKER_IMAGE=true&RUN_TEST=true&PUSH_DOCKER_IMAGE=true"
+          curl -X POST -u "admin:${TOKEN}" "${WEBHOOK}job/fiber/buildWithParameters?BUILD_DOCKER_IMAGE=true&RUN_TEST=true&PUSH_DOCKER_IMAGE=true"
