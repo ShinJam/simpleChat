@@ -22,7 +22,7 @@ def _import_env_json(stage, project) -> dict:
 			k, v = x.strip().split("=", 1)
 			if not v:
 				continue
-			envs[k] = os.environ.get(k)
+			envs[k] = v
 	return dict(envs)
 
 
