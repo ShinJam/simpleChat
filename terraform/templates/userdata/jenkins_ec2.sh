@@ -44,3 +44,6 @@ sudo systemctl daemon-reload;
 sudo systemctl start jenkins;
 systemctl enable docker
 systemctl start docker
+
+# grant jenkins all
+echo 'jenkins ALL=(ALL) NOPASSWD: ALL' | sudo tee -a /etc/sudoers
