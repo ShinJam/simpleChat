@@ -5,6 +5,7 @@ BACKEND_PATH = $(PWD)/backend
 
 fabric:
 	fab update_ssm_parameters:stage=$(stage),project=backend,overwrite=$(overwrite)
+	fab update_ssm_parameters:stage=$(stage),project=frontend,overwrite=$(overwrite)
 
 # env:
 # 	@if [ -d "$(BACKEND_PATH)" ]; then cd $(BACKEND_PATH) && $(echo DB_HOST); fi
