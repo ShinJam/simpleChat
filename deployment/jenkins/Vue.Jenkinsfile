@@ -6,10 +6,13 @@ pipeline {
     booleanParam(name : 'NPM_INSTALL', defaultValue : true, description : 'NPM_INSTALL')
     booleanParam(name : 'NPM_BUILD', defaultValue : true, description : 'NPM_BUILD')
 
+    string(name: 'AWS_ACCOUNT_ID', defaultValue: '559121217486', description: 'AWS_ACCOUNT_ID')
     // S3
     string(name: 'S3_BUCKET_NAME', defaultValue: 'kuve-20220207055615300800000001', description: 'S3_BUCKET_NAME')
   }
   environment {
+    REGION = 'ap-northeast-2'
+    ECR_REPOSITORY_URI = "${params.AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-2.amazonaws.com"
     BUCKET = "${params.S3_BUCKET_NAME}"
   }
 
@@ -26,7 +29,11 @@ pipeline {
       when { expression { return params.NPM_BUILD } }
       steps {
         dir("${env.WORKSPACE}/frontend") {
-          sh 'sudo npm run build'
+          sh '''
+            aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ECR_REPOSITORY_URI}; \
+            sh exportEnvs.sh \
+            sudo npm run build
+          '''
         }
       }
     }
