@@ -2,10 +2,9 @@ name: "Terraform"
 
 on:
   push:
-#    branches:
-#      - staging
-#    paths:
-#      - "**.tf"
+   branches:
+     - staging
+
 
 jobs:
   terraform:
