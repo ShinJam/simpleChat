@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  labels:
+    app: backend
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: 559121217486.dkr.ecr.ap-northeast-2.amazonaws.com/fiber:latest
+          ports:
+            - containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 20
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          env:
+          - name: SERVER_URL
+            valueFrom:
+              configMapKeyRef:
+                name: backend
+                key: SERVER_URL
+          - name: STAGE_STATUS
+            valueFrom:
+              secretKeyRef:
+                name: backend-secret
+                key: STAGE_STATUS
+          - name: SERVER_READ_TIMEOUT
+            valueFrom:
+              secretKeyRef:
+                name: backend-secret
+                key: SERVER_READ_TIMEOUT
+          - name: JWT_REFRESH_KEY
+            valueFrom:
+              secretKeyRef:
+                name: backend-secret
+                key: JWT_REFRESH_KEY
+          - name: JWT_REFRESH_KEY_EXPIRE_HOURS_COUNT
+            valueFrom:
+              secretKeyRef:
+                name: backend-secret
+                key: JWT_REFRESH_KEY_EXPIRE_HOURS_COUNT
+          - name: JWT_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: backend-secret
+                key: JWT_SECRET_KEY
+          - name: JWT_SECRET_KEY_EXPIRE_MINUTES_COUNT
+            valueFrom:
+              secretKeyRef:
+                name: backend-secret
+                key: JWT_SECRET_KEY_EXPIRE_MINUTES_COUNT
+          - name: DATABASE_URL
+            valueFrom:
+              secretKeyRef:
+                name: backend-secret
+                key: DATABASE_URL
+          - name: REDIS_URL
+            valueFrom:
+              secretKeyRef:
+                name: backend-secret
+                key: REDIS_URL
+          resources:
+            requests:
+              cpu: 500m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
