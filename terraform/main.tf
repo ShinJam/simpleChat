@@ -50,25 +50,33 @@ module "vpc" {
   database_subnets = var.database_subnets
 
   tags = local.common_tags
+  public_subnet_tags = {
+    "kubernetes.io/cluster/${var.eks_cluster_name}" = "shared"
+    "kubernetes.io/role/elb"                                          = "1"
+  }
+  private_subnet_tags = {
+    "kubernetes.io/cluster/${var.eks_cluster_name}" = "shared"
+    "kubernetes.io/role/internal-elb"                                 = "1"
+  }
 }
 
 ###################################
 # ALB
 ###################################
-module "alb" {
-  source = "./modules/alb"
+# module "alb" {
+#   source = "./modules/alb"
 
-  name = format("%s-alb", local.name)
+#   name = format("%s-alb", local.name)
 
-  vpc_id                  = module.vpc.vpc_id
-  security_groups         = tolist([module.sg.ec2_security_group_id, ])
-  subnets                 = module.vpc.public_subnets
-  http_tcp_listeners      = local.alb.http_tcp_listeners
-  http_tcp_listener_rules = local.alb.http_tcp_listener_rules
-  target_groups           = local.alb.target_groups
+#   vpc_id                  = module.vpc.vpc_id
+#   security_groups         = tolist([module.sg.ec2_security_group_id, ])
+#   subnets                 = module.vpc.public_subnets
+#   http_tcp_listeners      = local.alb.http_tcp_listeners
+#   http_tcp_listener_rules = local.alb.http_tcp_listener_rules
+#   target_groups           = local.alb.target_groups
 
-  tags = local.common_tags
-}
+#   tags = local.common_tags
+# }
 
 ######################################
 # KMS: create kms for encrypting/decrypting SSM parameter stores
@@ -89,24 +97,24 @@ module "kms" {
 ###################################
 
 # API-Server
-module "api-server" {
-  source = "./modules/ec2"
+# module "api-server" {
+#   source = "./modules/ec2"
 
-  name = "api-server"
+#   name = "api-server"
 
-  ami           = var.ami_id
-  instance_type = var.server_instance_type
-  key_name      = local.ec2.key_name
+#   ami           = var.ami_id
+#   instance_type = var.server_instance_type
+#   key_name      = local.ec2.key_name
 
-  sg_ids                      = tolist([module.sg.ec2_security_group_id, ])
-  subnet_id                   = element(module.vpc.private_subnets, 0)
-  associate_public_ip_address = false
-  iam_instance_profile        = aws_iam_instance_profile.api-server.name
+#   sg_ids                      = tolist([module.sg.ec2_security_group_id, ])
+#   subnet_id                   = element(module.vpc.private_subnets, 0)
+#   associate_public_ip_address = false
+#   iam_instance_profile        = aws_iam_instance_profile.api-server.name
 
-  user_data = data.template_file.api_userdata.rendered
+#   user_data = data.template_file.api_userdata.rendered
 
-  tags = local.common_tags
-}
+#   tags = local.common_tags
+# }
 
 # Jenkins
 module "jenkins" {
@@ -210,4 +218,14 @@ resource "aws_s3_bucket_policy" "vue" {
   policy = module.vue_s3.vue_bucket_policy.json
 
   depends_on = [module.vue_s3]
+}
+
+###################################
+# k8s
+###################################
+module "eks" {
+  source = "./modules/eks"
+
+  cluster_config_values = templatefile("./templates/k8s/cluster.yaml.tmpl", local.cluster_config_vars)
+  filename              = "./cluster.yaml"
 }

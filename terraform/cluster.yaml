@@ -1,0 +1,39 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: kuve-cluster
+  region: ap-northeast-2
+  version: "1.21"
+
+vpc:
+  subnets:
+    private:
+      private0:
+        id: subnet-087b5108dfac80032
+      private1:
+        id: subnet-0892739efa1dde7fa
+    public:
+      public0:
+        id: subnet-0e99227b3192d2995
+      public1:
+        id: subnet-00660d3314803bae1
+
+managedNodeGroups:
+- name: kuve-cluster-workers
+  subnets:
+  - subnet-087b5108dfac80032
+  - subnet-0892739efa1dde7fa
+  minSize: 2
+  maxSize: 4
+  desiredCapacity: 2
+  instanceType: t3.small
+  labels: {role: worker}
+  ssh:
+    publicKeyName: kuve-ec2
+  tags:
+    nodegroup-role: worker
+  iam:
+    withAddonPolicies:
+      externalDNS: true
+      certManager: true
+      albIngress: true
