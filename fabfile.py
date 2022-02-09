@@ -23,11 +23,13 @@ def _import_env_json(stage, project) -> dict:
 			k, v = x.strip().split("=", 1)
 			if not v:
 				continue
-			# convert to base64 string
-			v_bytes = v.encode('ascii')
-			v_base64 = base64.b64encode(v_bytes)
-			v_base64_str = v_base64.decode('ascii')
-			envs[k] = v_base64_str
+			value = v
+			if project == "backend":
+				# convert to base64 string
+				v_bytes = v.encode('ascii')
+				v_base64 = base64.b64encode(v_bytes)
+				value = v_base64.decode('ascii')
+			envs[k] = value
 	return dict(envs)
 
 
