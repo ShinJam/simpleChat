@@ -308,6 +308,8 @@ override.tf.json
 .terraformrc
 terraform.rc
 
+# ignore cluster
+cluster.yaml
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
