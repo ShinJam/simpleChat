@@ -8,7 +8,7 @@ pipeline {
 
     string(name: 'AWS_ACCOUNT_ID', defaultValue: '559121217486', description: 'AWS_ACCOUNT_ID')
     // S3
-    string(name: 'S3_BUCKET_NAME', defaultValue: 'kuve-20220207055615300800000001', description: 'S3_BUCKET_NAME')
+    string(name: 'S3_BUCKET_NAME', defaultValue: 'kuve-20220208060349975100000005', description: 'S3_BUCKET_NAME')
   }
   environment {
     REGION = 'ap-northeast-2'
