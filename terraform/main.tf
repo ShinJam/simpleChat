@@ -63,20 +63,20 @@ module "vpc" {
 ###################################
 # ALB
 ###################################
-# module "alb" {
-#   source = "./modules/alb"
+ module "alb" {
+   source = "./modules/alb"
 
-#   name = format("%s-alb", local.name)
+   name = format("%s-alb", local.name)
 
-#   vpc_id                  = module.vpc.vpc_id
-#   security_groups         = tolist([module.sg.ec2_security_group_id, ])
-#   subnets                 = module.vpc.public_subnets
-#   http_tcp_listeners      = local.alb.http_tcp_listeners
-#   http_tcp_listener_rules = local.alb.http_tcp_listener_rules
-#   target_groups           = local.alb.target_groups
+   vpc_id                  = module.vpc.vpc_id
+   security_groups         = tolist([module.sg.ec2_security_group_id, ])
+   subnets                 = module.vpc.public_subnets
+   http_tcp_listeners      = local.alb.http_tcp_listeners
+   http_tcp_listener_rules = local.alb.http_tcp_listener_rules
+   target_groups           = local.alb.target_groups
 
-#   tags = local.common_tags
-# }
+   tags = local.common_tags
+ }
 
 ######################################
 # KMS: create kms for encrypting/decrypting SSM parameter stores
