@@ -1,6 +1,7 @@
 import json
 import os
 from pathlib import Path
+import base64
 
 from fabric.api import local
 
@@ -22,16 +23,23 @@ def _import_env_json(stage, project) -> dict:
 			k, v = x.strip().split("=", 1)
 			if not v:
 				continue
-			envs[k] = v
+			value = v
+			if project == "backend":
+				# convert to base64 string
+				v_bytes = v.encode('ascii')
+				v_base64 = base64.b64encode(v_bytes)
+				value = v_base64.decode('ascii')
+			envs[k] = value
 	return dict(envs)
 
 
 def hello(stage, project):
-	print(_import_env_json(stage, project))
+	for k, v in _import_env_json(stage, project).items():
+		print(f"{k}: {v}")
 
 
 def update_ssm_parameters(
-	service: str = "kuve",
+	service: str = "kuve_eks",
 	stage: str = "",
 	project: str = "",
 	region: str = "ap-northeast-2",

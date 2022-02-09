@@ -82,3 +82,9 @@ variable "redis_instance_type" {
   type        = string
   description = "Elastic cache instance type"
 }
+# eks
+variable "eks_cluster_name" {}
+variable "eks_instance_type" {}
+variable "eks_node_min_size" {}
+variable "eks_node_max_size" {}
+variable "eks_desired_node_capacity" {}

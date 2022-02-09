@@ -4,7 +4,7 @@ set -e
 
 PARAMETERS=`
 aws ssm get-parameters-by-path \
-    --path "/kuve/staging/frontend" \
+    --path "/kuve_eks/staging/frontend" \
     --with-decryption \
     --region ap-northeast-2 \
     --recursive

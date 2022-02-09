@@ -37,4 +37,13 @@ variable "tags" {
   description = "A mapping of tags to assign to security group"
   type        = map(string)
 }
+variable "public_subnet_tags" {
+  description = "Additional tags for the public subnets"
+  default     = {}
+}
+
+variable "private_subnet_tags" {
+  description = "Additional tags for the private subnets"
+  default     = {}
+}
 

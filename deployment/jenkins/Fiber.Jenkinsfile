@@ -24,51 +24,74 @@ pipeline {
   }
 
   stages {
-    stage('============ Build Docker Image ============') {
+    stage('============ Update kubeconfig ============') {
       when {
         expression {
           return params.BUILD_DOCKER_IMAGE
         }
       }
       steps {
-        dir("${env.WORKSPACE}/backend") {
-          sh 'docker build -t ${ECR_DOCKER_IMAGE}:${ECR_DOCKER_TAG} -f docker/Dockerfile.fiber .'
+        dir("${env.WORKSPACE}/deployment") {
+          sh 'aws eks update-kubeconfig --region ap-northeast-2 --name kuve-cluster --alias kuve-cluster'
         }
       }
     }
-    stage('============ Push Docker Image ============') {
+    stage('============ Apply secrets and Configmap ============') {
       when {
         expression {
           return params.PUSH_DOCKER_IMAGE
         }
       }
       steps {
-        dir("${env.WORKSPACE}/backend") {
+        dir("${env.WORKSPACE}/deployment") {
           sh'''
-              aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ECR_REPOSITORY_URI}
-              docker push ${ECR_DOCKER_IMAGE}:${ECR_DOCKER_TAG}
+              kubectl apply -f k8s/backend-secret-v1.yaml; \
+              kubectl apply -f k8s/backend-configmap-v1.yaml
             '''
         }
       }
     }
-    stage('============ Deploy workload ============') {
-      when { expression { return params.DEPLOY_WORKLOAD } }
+    stage('============ Apply deployment ============') {
+      when {
+        expression {
+          return params.PUSH_DOCKER_IMAGE
+        }
+      }
       steps {
-          sshagent (credentials: ['aws_ec2_user_ssh']) {
-              sh """#!/bin/bash
-                  scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no \
-                      ${env.WORKSPACE}/backend/docker/staging.yml \
-                      ${env.WORKSPACE}/backend/exportEnvs.sh \
-                      ${params.TARGET_SVR_USER}@${params.TARGET_SVR}:${params.TARGET_SVR_PATH};
-
-                  ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no \
-                      ${params.TARGET_SVR_USER}@${params.TARGET_SVR} \
-                      'aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ECR_REPOSITORY_URI}; \
-                       sh exportEnvs.sh \
-                       docker-compose -f staging.yml down; \
-                       IMAGE=${ECR_DOCKER_IMAGE} TAG=${ECR_DOCKER_TAG} docker-compose -f staging.yml up -d';
-              """
-          }
+        dir("${env.WORKSPACE}/deployment") {
+          sh'''
+              kubectl apply -f k8s/backend-deploy.yaml
+            '''
+        }
+      }
+    }
+    stage('============ Apply service ============') {
+      when {
+        expression {
+          return params.PUSH_DOCKER_IMAGE
+        }
+      }
+      steps {
+        dir("${env.WORKSPACE}/deployment") {
+          sh'''
+              kubectl apply -f k8s/backend-service.yaml
+            '''
+        }
+      }
+    }
+    stage('============ Apply HPA ============') {
+      when {
+        expression {
+          return params.PUSH_DOCKER_IMAGE
+        }
+      }
+      steps {
+        dir("${env.WORKSPACE}/deployment") {
+          sh'''
+              kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml; \
+              kubectl apply -f k8s/backend-hpa.yaml
+            '''
+        }
       }
     }
   }

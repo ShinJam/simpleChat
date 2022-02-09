@@ -2,6 +2,7 @@
 
 FRONTEND_PATH = $(PWD)/frontend
 BACKEND_PATH = $(PWD)/backend
+TERRAFORM_PATH = $(PWD)/terraform
 
 fabric:
 	fab update_ssm_parameters:stage=$(stage),project=backend,overwrite=$(overwrite)
@@ -27,3 +28,6 @@ prune:
 
 ecr-login:
 	aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${ECR_REPOSITORY}
+
+apply-eks:
+	@if [ -d "$(TERRAFORM_PATH)" ]; then cd $(TERRAFORM_PATH) && eksctl create cluster -f cluster.yaml; fi
